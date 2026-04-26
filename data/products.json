@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Crystal PET 0.5L",
+    "price": "€0.12",
+    "description": "Ultra-clear PET bottle with excellent barrier properties. Lightweight yet durable, perfect for still water and juices. Features a precision-molded neck finish for secure cap sealing.",
+    "size": "0.5L",
+    "weight": "18g",
+    "category": "PET Bottle",
+    "image": "/gallery/Empty_plastic_bottle.png"
+  },
+  {
+    "id": 2,
+    "name": "EcoLine PET 1L",
+    "price": "€0.18",
+    "description": "Our flagship 1-liter PET bottle designed for maximum clarity and structural integrity. Ideal for carbonated and non-carbonated beverages. Eco-friendly design uses 15% less plastic than industry standard.",
+    "size": "1L",
+    "weight": "28g",
+    "category": "PET Bottle",
+    "image": "/gallery/Empty_plastic_bottle.png"
+  },
+  {
+    "id": 3,
+    "name": "ProPack PET 2L",
+    "price": "€0.25",
+    "description": "Heavy-duty 2-liter PET bottle built for carbonated beverages. Enhanced base design for superior stability. Premium-grade PET resin ensures long shelf life and taste preservation.",
+    "size": "2L",
+    "weight": "42g",
+    "category": "PET Bottle",
+    "image": "/gallery/Empty_plastic_bottle.png"
+  }
+]

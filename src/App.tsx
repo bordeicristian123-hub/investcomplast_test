@@ -4,414 +4,603 @@
  */
 
 import { motion } from "motion/react";
-import { Search, Menu, X } from "lucide-react";
-import HeroVideo from "./components/HeroVideo";
-import { useState } from "react";
+import { Routes, Route, Outlet, useLocation, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Palette, Cog, ShieldCheck, Lightbulb } from "lucide-react";
+import { Footer } from "./components/Footer";
+import { TrustBar } from "./components/TrustBar";
+import { HlsVideo } from "./components/HlsVideo";
+import { Navbar } from "./components/Navbar";
+import AnimatedCounter from "./components/AnimatedCounter";
+import ProductShowcase from "./components/ProductShowcase";
+import ScrollVideoSection from "./components/ScrollVideoSection";
+import ProductPage from "./pages/ProductPage";
+import ProductsPage from "./pages/ProductsPage";
+import ContactPage from "./pages/ContactPage";
 
-export default function App() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+function HomePage() {
+  const location = useLocation();
+  const [videoComplete, setVideoComplete] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const parallaxY = Math.min(scrollY * 0.25, 200);
+
+  // Activate counters whenever #why-us enters the viewport — covers all cases:
+  //  1. Reload / direct link with why-us already visible
+  //  2. User scrolls past the video section before it finishes loading
+  //  3. Normal flow where onComplete fires after the scroll animation
+  useEffect(() => {
+    const el = document.getElementById('why-us');
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVideoComplete(true); },
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Handle scroll-to-products when navigating back from product page
+  useEffect(() => {
+    const state = location.state as { scrollTo?: string } | null;
+    if (state?.scrollTo) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById(state.scrollTo!);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        // Clear state so it doesn't scroll again on refresh
+        window.history.replaceState({}, '');
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
 
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden font-sans text-white selection:bg-blue-500/30 bg-[#040c1b]">
-      
+
+      {/* Global grid background */}
+      <div className="grid-bg fixed inset-0 z-0 pointer-events-none" />
+
       {/* ═══════════════════════════════════════════ */}
       {/* NAVIGATION BAR                              */}
       {/* ═══════════════════════════════════════════ */}
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-7xl z-50">
-        <div className="flex items-center justify-between px-8 py-4 bg-white/8 backdrop-blur-2xl border border-white/15 rounded-2xl shadow-2xl shadow-black/20">
-          {/* Logo */}
-          <div className="text-2xl font-bold tracking-tight text-blue-100">
-            Invest<span className="text-white">ComPlast</span>
-          </div>
-
-          {/* Nav Links - Desktop */}
-          <div className="hidden md:flex items-center space-x-10">
-            {["Home", "Catalog", "Why Us", "Contact"].map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase().replace(" ", "-")}`}
-                className="text-sm font-medium text-white/70 hover:text-white transition-colors duration-300"
-              >
-                {item}
-              </a>
-            ))}
-            <button className="text-white/70 hover:text-white transition-colors duration-300">
-              <Search size={20} />
-            </button>
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden text-white/70 hover:text-white transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-
-          {/* CTA Button */}
-          <button className="hidden md:block px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-blue-600/25 active:scale-95 hover:-translate-y-0.5">
-            Get in touch
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-3 px-6 py-6 bg-white/8 backdrop-blur-2xl border border-white/15 rounded-2xl md:hidden"
-          >
-            <div className="flex flex-col space-y-4">
-              {["Home", "Catalog", "Why Us", "Contact"].map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase().replace(" ", "-")}`}
-                  className="text-sm font-medium text-white/70 hover:text-white transition-colors py-2"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item}
-                </a>
-              ))}
-              <button className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/25 w-full">
-                Get in touch
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </nav>
+      <Navbar />
 
       {/* ═══════════════════════════════════════════ */}
-      {/* HERO SECTION WITH VIDEO BACKGROUND          */}
+      {/* HERO SECTION                                */}
       {/* ═══════════════════════════════════════════ */}
       <section id="home" className="relative min-h-screen overflow-hidden">
-        {/* Video Background */}
-        <HeroVideo src="/gallery/Background.mp4" overlayOpacity={0.35} />
+        {/* Background gradient layers */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 hero-gradient-overlay" />
+          <div className="grid-bg absolute inset-0 opacity-60" />
+          <div className="noise absolute inset-0" />
+        </div>
 
-        {/* ── Decorative floating particles ── */}
+        {/* Floating particles */}
         <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
-          {[...Array(6)].map((_, i) => (
+          {[...Array(8)].map((_, i) => (
             <motion.div
               key={`particle-${i}`}
               className="absolute rounded-full bg-blue-400/20"
               style={{
-                width: `${4 + i * 3}px`,
-                height: `${4 + i * 3}px`,
-                left: `${15 + i * 14}%`,
-                top: `${20 + (i % 3) * 25}%`,
+                width: `${3 + i * 2}px`,
+                height: `${3 + i * 2}px`,
+                left: `${10 + i * 11}%`,
+                top: `${15 + (i % 4) * 20}%`,
               }}
               animate={{
-                y: [0, -30 - i * 10, 0],
+                y: [0, -30 - i * 8, 0],
                 x: [0, (i % 2 === 0 ? 15 : -15), 0],
                 opacity: [0.2, 0.6, 0.2],
               }}
               transition={{
-                duration: 4 + i * 0.8,
+                duration: 5 + i * 0.5,
                 repeat: Infinity,
                 ease: "easeInOut",
-                delay: i * 0.5,
+                delay: i * 0.3,
               }}
             />
           ))}
         </div>
 
-        {/* ── Glowing ring decoration (right side) ── */}
-        <motion.div
-          className="absolute top-1/2 right-[15%] -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-blue-400/10 z-[5] pointer-events-none hidden md:block"
-          animate={{ rotate: 360, scale: [1, 1.05, 1] }}
-          transition={{ rotate: { duration: 30, repeat: Infinity, ease: "linear" }, scale: { duration: 6, repeat: Infinity, ease: "easeInOut" } }}
-        />
-        <motion.div
-          className="absolute top-1/2 right-[13%] -translate-y-1/2 w-[580px] h-[580px] rounded-full border border-cyan-400/[0.06] z-[5] pointer-events-none hidden md:block"
-          animate={{ rotate: -360 }}
-          transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
-        />
+        {/* Orbital rings — right side */}
+        <div className="hidden md:block absolute top-1/2 right-[12%] -translate-y-1/2 z-[5] pointer-events-none">
+          <div
+            className="w-[640px] h-[640px] rounded-full border border-cyan-400/[0.06] absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
+            style={{ animation: 'spin-slow 45s linear infinite reverse' }}
+          />
+          <div
+            className="w-[520px] h-[520px] rounded-full border border-blue-400/10 absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
+            style={{ animation: 'spin-slow 30s linear infinite' }}
+          />
+          <div
+            className="w-[400px] h-[400px] rounded-full border border-dashed border-blue-400/[0.08] absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
+            style={{ animation: 'spin-slow 25s linear infinite reverse' }}
+          />
+        </div>
 
-        {/* Hero Content */}
-        <main className="relative z-10 flex flex-col items-center min-h-screen px-6 md:px-20 pt-28 pb-12">
-          
-          {/* ── Top area: Text left + Bottle right ── */}
-          <div className="w-full max-w-7xl flex flex-col md:flex-row items-center justify-between flex-1">
-            
-            {/* Left Content */}
-            <div className="w-full md:w-[45%] flex flex-col items-start space-y-6 md:space-y-8 z-10">
+        {/* Main hero */}
+        <main className="relative z-10 flex flex-col items-center min-h-screen px-6 md:px-20 pt-28 md:pt-32 pb-12">
+
+          <div className="w-full max-w-7xl flex flex-col md:flex-row items-center justify-between flex-1 gap-10">
+
+            {/* LEFT — copy */}
+            <div className="w-full md:w-[48%] flex flex-col items-center md:items-start space-y-7 z-10">
+
+              {/* Live status pill */}
               <motion.div
-                initial={{ opacity: 0, x: -40 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 1, ease: "easeOut" }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="flex items-center gap-3"
               >
-                <span className="inline-block px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-blue-300 bg-blue-500/10 border border-blue-400/20 rounded-full mb-6 backdrop-blur-sm">
-                  Premium Packaging Solutions
-                </span>
+                <div className="liquid-glass-blue flex items-center gap-2.5 pl-2 pr-4 py-1.5 text-[12px]">
+                  <span className="live-dot" />
+                  <span className="text-blue-200 font-medium">Production active · Chișinău, MD</span>
+                </div>
               </motion.div>
 
+              {/* Headline */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.15, ease: "easeOut" }}
+                transition={{ duration: 0.75, delay: 0.1, ease: "easeOut" }}
               >
-                <h1 className="text-4xl sm:text-5xl md:text-[3.5rem] lg:text-6xl font-bold leading-[1.1] tracking-tight text-white">
-                  <span className="text-white/90">InvestComPlast:</span> <br />
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-blue-300 to-cyan-200">
+                <h1
+                  className="text-[44px] sm:text-5xl md:text-[3.4rem] lg:text-[4rem] font-bold leading-[1.02] tracking-tight text-white text-center md:text-left"
+                  style={{ fontFamily: "'Figtree', system-ui, -apple-system, sans-serif" }}
+                >
+                  <span className="font-black tracking-tighter text-white/90">
+                    <span className="text-blue-400">Invest</span>complast:
+                  </span>
+                  <br />
+                  <span className="gradient-text font-black leading-[1.02] tracking-tight">
                     Shaping the Future
-                  </span> <br />
-                  <span className="text-white">of Packaging.</span>
+                  </span>
+                  <br />
+                  <span className="gradient-text font-black leading-[1.02] tracking-tight">
+                    of Packaging.
+                  </span>
                 </h1>
               </motion.div>
 
+              {/* Subhead */}
               <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
-                className="text-base md:text-lg text-white/55 max-w-md leading-relaxed"
+                transition={{ duration: 0.75, delay: 0.22, ease: "easeOut" }}
+                className="text-base md:text-lg text-white/55 max-w-md leading-relaxed text-center md:text-left"
               >
-                Leading manufacturer of innovative, sustainable plastic solutions
-                for global industries.
+                Precision-engineered PET bottles for producers of water, juice and dairy.
+                Built to last. Made to lead.
               </motion.p>
 
+              {/* CTA — original Explore Products button */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="flex gap-4 flex-wrap"
+                transition={{ duration: 0.45, delay: 0.35 }}
               >
-                <button className="group px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-full shadow-xl shadow-blue-600/30 transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center gap-2">
+                <button
+                  className="liquid-glass-strong-blue rounded-full px-10 py-5 text-[18px] font-medium hover:scale-105 transition-transform flex items-center gap-2.5"
+                  onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
+                >
                   Explore Products
-                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                </button>
-                <button className="px-8 py-4 bg-white/10 hover:bg-white/15 text-white font-bold rounded-full border border-white/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 active:scale-95">
-                  Learn More
+                  <span className="text-sm">↗</span>
                 </button>
               </motion.div>
             </div>
 
-            {/* Right Content - 3D Bottle (larger, more prominent) */}
-            <div className="w-full md:w-[55%] relative flex justify-center items-center mt-8 md:mt-0">
+            {/* Mobile stat panels — visible on small screens between text and bottle */}
+            <div className="w-full grid grid-cols-3 gap-2 md:hidden">
+              {[
+                { num: '600k+', label: 'Bottles Produced Monthly', mono: '01' },
+                { num: '15+', label: 'Global Partners', mono: '02' },
+                { num: '15+', label: 'Years in Industry', mono: '03' },
+              ].map((w, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 1.0 + i * 0.08 }}
+                  className="liquid-glass-blue rounded-[14px] p-3 tilt"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="mono text-[9px] text-blue-300/40">/{w.mono}</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
+                  </div>
+                  <div className="font-black text-[20px] leading-none tracking-tight text-white">{w.num}</div>
+                  <div className="text-[8px] text-blue-200/60 uppercase tracking-widest font-medium mt-1 leading-tight">{w.label}</div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* RIGHT — bottle with spec callouts */}
+            <div
+              className="w-full md:w-[52%] relative flex justify-center items-center min-h-[480px] mt-8 md:mt-0"
+              style={{ transform: `translateY(${-parallaxY * 0.3}px)` }}
+            >
+
               <motion.div
                 initial={{ opacity: 0, y: 60, scale: 0.8 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+                transition={{ duration: 0.9, ease: "easeOut", delay: 0.15 }}
                 className="relative w-full flex justify-center items-center"
               >
-                {/* Multi-layer glow */}
-                <div className="absolute w-[70%] h-[70%] bg-blue-600/15 blur-[100px] rounded-full" />
-                <div className="absolute w-[50%] h-[50%] bg-cyan-400/10 blur-[80px] rounded-full" />
+                {/* Glow halos */}
+                <div className="absolute w-[60%] h-[60%] bg-blue-600/20 blur-[110px] rounded-full" />
+                <div className="absolute w-[40%] h-[40%] bg-cyan-400/15 blur-[80px] rounded-full" />
 
-                {/* Bottle with smooth levitation */}
-                <motion.img
-                  src="/gallery/sticla.png"
-                  alt="Premium Plastic Packaging by InvestComPlast"
-                  className="relative z-10 w-[55%] md:w-[50%] lg:w-[45%] h-auto drop-shadow-[0_40px_60px_rgba(0,100,255,0.15)]"
-                  referrerPolicy="no-referrer"
-                  animate={{
-                    y: [0, -20, 0],
-                    rotate: [-2, 2, -2],
-                  }}
-                  transition={{
-                    y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-                    rotate: { duration: 6, repeat: Infinity, ease: "easeInOut" },
-                  }}
-                />
+                {/* Bottle */}
+                <div className="relative z-10 flex justify-center items-center">
+                  <motion.img
+                    src="/gallery/sticla.png"
+                    alt="Premium PET bottle"
+                    className="relative w-[230px] md:w-[280px] lg:w-[330px] h-auto"
+                    style={{ filter: 'drop-shadow(0 40px 60px rgba(0,100,255,0.25))' }}
+                    animate={{
+                      y: [0, -20, 0],
+                      rotate: [-2, 2, -2],
+                    }}
+                    transition={{
+                      y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                      rotate: { duration: 6, repeat: Infinity, ease: "easeInOut" },
+                    }}
+                  />
+
+                  {/* Spec callout: top-left */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, delay: 0.8 }}
+                    className="hero-spec-card spec-material-pos block"
+                  >
+                    <div className="eyebrow mb-1" style={{ fontSize: '9px' }}>Material</div>
+                    <div className="text-white font-bold text-[15px]">Food-grade PET</div>
+                    <div className="text-blue-200/50 text-[11px] mono mt-0.5">100% recyclable</div>
+                  </motion.div>
+
+                  {/* Spec callout: right */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, delay: 1.0 }}
+                    className="hero-spec-card block"
+                    style={{ top: '38%', right: '-12%' }}
+                  >
+                    <div className="eyebrow mb-1" style={{ fontSize: '9px' }}>Weight</div>
+                    <div className="text-white font-bold text-[15px]">20 – 50g</div>
+                    <div className="text-blue-200/50 text-[11px] mono mt-0.5">15% lighter spec</div>
+                  </motion.div>
+
+                  {/* Spec callout: bottom-left */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, delay: 1.2 }}
+                    className="hero-spec-card block"
+                    style={{ bottom: '10%', left: '-6%' }}
+                  >
+                    <div className="eyebrow mb-1" style={{ fontSize: '9px' }}>Capacity</div>
+                    <div className="text-white font-bold text-[15px]">0.5L → 6L</div>
+                    <div className="text-blue-200/50 text-[11px] mono mt-0.5">Custom molds</div>
+                  </motion.div>
+                </div>
               </motion.div>
             </div>
           </div>
 
-          {/* ── Bottom: Glassmorphism info cards ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-5 mt-8 md:mt-4 z-10"
-          >
+          {/* Bottom stat panels — original data, 3 panels */}
+          <div className="w-full max-w-7xl hidden lg:grid grid-cols-3 gap-4 mt-8">
             {[
-              {
-                title: "About Us",
-                desc: "Committed to quality, innovation, and advanced manufacturing technology.",
-                icon: "🏭",
-              },
-              {
-                title: "Product Range",
-                desc: "A diverse portfolio of standard and custom packaging solutions.",
-                icon: "📦",
-              },
-              {
-                title: "Sustainability",
-                desc: "Dedicated to eco-friendly materials and reducing our environmental footprint.",
-                icon: "🌿",
-              },
-            ].map((card, i) => (
+              { num: '600k+', label: 'Bottles Produced Monthly', mono: '01' },
+              { num: '15+', label: 'Global Partners', mono: '02' },
+              { num: '15+', label: 'Years in Industry', mono: '03' },
+            ].map((w, i) => (
               <motion.div
-                key={card.title}
-                whileHover={{ y: -4, scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="group relative px-6 py-5 bg-white/[0.06] backdrop-blur-xl border border-white/[0.1] rounded-2xl hover:bg-white/[0.1] hover:border-white/[0.18] transition-all duration-500 cursor-pointer overflow-hidden"
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 1.0 + i * 0.08 }}
+                className="liquid-glass-blue rounded-[22px] p-5 tilt"
               >
-                {/* Hover glow */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
-                
-                <div className="relative flex items-start gap-4">
-                  <span className="text-2xl flex-shrink-0 mt-0.5">{card.icon}</span>
-                  <div>
-                    <h3 className="text-sm font-bold text-white/90 mb-1 group-hover:text-white transition-colors">{card.title}</h3>
-                    <p className="text-xs text-white/40 leading-relaxed group-hover:text-white/55 transition-colors">{card.desc}</p>
-                  </div>
+                <div className="flex items-start justify-between mb-3">
+                  <span className="mono text-[10px] text-blue-300/40">/{w.mono}</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
                 </div>
+                <div className="font-black text-[30px] leading-none tracking-tight text-white">{w.num}</div>
+                <div className="text-[11px] text-blue-200/60 uppercase tracking-widest font-medium mt-2">{w.label}</div>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
+
+          {/* Scroll indicator */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden md:flex flex-col items-center gap-2 text-blue-200/30">
+            <span className="mono text-[10px] tracking-widest">SCROLL</span>
+            <div className="w-[1px] h-10 bg-gradient-to-b from-blue-400/60 to-transparent" />
+          </div>
         </main>
 
-        {/* HERO → FEATURES: Clean gradient fade */}
-        <div className="absolute bottom-0 left-0 w-full h-60 z-20 pointer-events-none bg-gradient-to-b from-transparent to-[#040c1b]" />
+        <div className="section-fade-bottom" />
       </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* TRUST BAR                                   */}
+      {/* ═══════════════════════════════════════════ */}
+      <TrustBar />
 
       {/* ═══════════════════════════════════════════ */}
       {/* FEATURES SECTION                            */}
       {/* ═══════════════════════════════════════════ */}
-      <section id="catalog" className="relative z-10 py-24 px-6 bg-[#040c1b]">
-        <div className="max-w-7xl mx-auto">
+      <section id="catalog" className="relative z-10 py-28 px-6 overflow-hidden">
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#040c1b] to-transparent pointer-events-none z-20" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#040c1b] to-transparent pointer-events-none z-20" />
+
+        {/* ── Background light orbs ── */}
+        <motion.div
+          className="absolute top-[-10%] left-[10%] w-[500px] h-[500px] rounded-full bg-blue-600/[0.07] blur-[120px] pointer-events-none"
+          animate={{ x: [0, 60, -30, 40, 0], y: [0, 40, -20, 30, 0], scale: [1, 1.2, 0.9, 1.15, 1] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-[-10%] right-[5%] w-[600px] h-[600px] rounded-full bg-cyan-500/[0.06] blur-[140px] pointer-events-none"
+          animate={{ x: [0, -70, 30, -50, 0], y: [0, -50, 25, -40, 0], scale: [1, 1.25, 0.92, 1.18, 1] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        />
+        <motion.div
+          className="absolute top-[40%] left-[45%] w-[400px] h-[400px] rounded-full bg-blue-400/[0.05] blur-[100px] pointer-events-none"
+          animate={{ x: [0, 50, -40, 20, -30, 0], y: [0, -40, 30, -20, 35, 0], scale: [1, 1.15, 0.88, 1.12, 0.95, 1] }}
+          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
+
+        <div className="max-w-7xl mx-auto relative z-10">
+
+          {/* Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex justify-center mb-7"
+          >
+            <span className="liquid-glass-blue text-[11px] font-semibold tracking-[0.2em] uppercase text-blue-300 px-5 py-2 rounded-full">
+              Our Solutions
+            </span>
+          </motion.div>
+
+          {/* Heading */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-100 to-blue-400">
-              Our Solutions
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold italic tracking-tight text-white mb-5">
+              Quality is everything.
             </h2>
-            <p className="text-blue-200/50 max-w-2xl mx-auto text-lg">
+            <p className="text-blue-200/45 max-w-xl mx-auto text-lg leading-relaxed">
               Innovative packaging solutions engineered for performance, sustainability, and precision.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
               {
-                title: "PET Bottles",
-                desc: "Premium quality PET bottles with crystal-clear transparency and superior barrier properties.",
-                icon: "🧴"
+                title: "Custom Bottle Design",
+                desc: "Shape, size, color and neck finish tailored to your product.",
+                Icon: Palette,
               },
               {
-                title: "Custom Packaging",
-                desc: "Bespoke packaging solutions tailored to your brand's unique identity and requirements.",
-                icon: "📦"
+                title: "Automated Blow Molding",
+                desc: "One of the few companies in Moldova equipped with fully automated bottle blowing technology, ensuring precision and consistency.",
+                Icon: Cog,
               },
               {
-                title: "Sustainable Materials",
-                desc: "Eco-friendly packaging options using recycled and biodegradable materials.",
-                icon: "♻️"
-              }
-            ].map((feature, i) => (
+                title: "Quality Assurance",
+                desc: "Rigorous quality control at every stage ensuring every product meets the highest standards.",
+                Icon: ShieldCheck,
+              },
+              {
+                title: "Innovation Driven",
+                desc: "Continuously improving technology and processes for better results.",
+                Icon: Lightbulb,
+              },
+            ].map(({ title, desc, Icon }, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
-                className="group p-8 bg-white/[0.04] backdrop-blur-lg border border-white/[0.08] rounded-3xl hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-500 hover:-translate-y-1"
+                transition={{ delay: i * 0.1 }}
+                className="liquid-glass-card-blue group p-7 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_0_50px_rgba(59,130,246,0.14)]"
               >
-                <div className="text-4xl mb-6 group-hover:scale-110 transition-transform duration-500">
-                  {feature.icon}
+                {/* Icon container */}
+                <div className="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6 group-hover:bg-blue-500/15 group-hover:border-blue-400/30 transition-all duration-500">
+                  <Icon size={20} className="text-blue-400 group-hover:text-blue-300 transition-colors duration-300" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-blue-100 group-hover:text-white transition-colors duration-300">{feature.title}</h3>
-                <p className="text-blue-200/40 leading-relaxed group-hover:text-blue-200/60 transition-colors duration-300">{feature.desc}</p>
+                <h3 className="text-[15px] font-bold mb-3 text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
+                  {title}
+                </h3>
+                <p className="text-blue-200/40 leading-relaxed text-sm group-hover:text-blue-200/60 transition-colors duration-300">
+                  {desc}
+                </p>
               </motion.div>
             ))}
           </div>
+
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════ */}
+      {/* PRODUCT SHOWCASE SECTION                    */}
+      {/* ═══════════════════════════════════════════ */}
+      <ProductShowcase />
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* SCROLL-DRIVEN VIDEO SECTION                 */}
+      {/* ═══════════════════════════════════════════ */}
+      <ScrollVideoSection onComplete={() => setVideoComplete(true)} />
+
+      {/* ═══════════════════════════════════════════ */}
       {/* WHY US / STATS SECTION                      */}
       {/* ═══════════════════════════════════════════ */}
-      <section id="why-us" className="relative z-10 py-24 bg-gradient-to-b from-[#040c1b] via-blue-950/20 to-[#040c1b]">
+      <section id="why-us" className="relative z-10 py-28">
         <div className="max-w-7xl mx-auto px-6">
+
+          {/* Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex justify-center mb-7"
+          >
+            <span className="liquid-glass-blue text-[11px] font-semibold tracking-[0.2em] uppercase text-blue-300 px-5 py-2 rounded-full">
+              Why Us
+            </span>
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-100 to-blue-400">
-              Why InvestComPlast?
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold italic tracking-tight text-white mb-5">
+              The difference is everything.
             </h2>
-            <p className="text-blue-200/50 max-w-2xl mx-auto text-lg">
+            <p className="text-blue-200/45 max-w-xl mx-auto text-lg leading-relaxed">
               Years of expertise, cutting-edge technology, and a commitment to excellence.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[
-              { label: "Years Experience", value: "15+" },
-              { label: "Products Made", value: "50M+" },
-              { label: "Happy Clients", value: "200+" },
-              { label: "Countries", value: "12" }
-            ].map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="p-6"
-              >
-                <div className="text-4xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-b from-blue-300 to-blue-600 mb-3">{stat.value}</div>
-                <div className="text-sm uppercase tracking-[0.2em] text-blue-200/35 font-bold">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
+          {/* Stats card — structure mirrors Flower web Stats.tsx exactly */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+            className="liquid-glass-card-blue relative overflow-hidden"
+          >
+            {/* Same HLS stream as Flower web, desaturated + blue overlay */}
+            <HlsVideo
+              src="https://stream.mux.com/NcU3HlHeF7CUL86azTTzpy3Tlb00d6iF3BmCdFslMJYM.m3u8"
+              className="absolute inset-0 w-full h-full object-cover z-0"
+              desaturated
+            />
+            {/* Blue colour tint over the grayscale video */}
+            <div className="absolute inset-0 z-[1] bg-blue-600/20 mix-blend-color pointer-events-none" />
+
+            {/* Radial vignette — replaces the linear top/bottom fades */}
+            <div
+              className="absolute inset-0 z-[2] pointer-events-none"
+              style={{ background: 'radial-gradient(ellipse at center, transparent 35%, #040c1b 90%)' }}
+            />
+
+            {/* Stat grid */}
+            <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-12 text-center py-12 px-14 md:py-16 md:px-20">
+              {[
+                { label: "Years Experience", numValue: 15, suffix: "+" },
+                { label: "Products Made", numValue: 50, suffix: "M+" },
+                { label: "Partners", numValue: 15, suffix: "+" },
+                { label: "Food-Grade Materials", numValue: 100, suffix: "%" },
+              ].map((stat, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                  className="flex flex-col gap-2"
+                >
+                  <div className="flex items-center justify-center gap-0.5">
+                    <AnimatedCounter
+                      value={stat.numValue}
+                      fontSize={56}
+                      padding={0}
+                      gap={2}
+                      textColor="white"
+                      fontWeight={700}
+                      gradientFrom="transparent"
+                      gradientTo="transparent"
+                      active={videoComplete}
+                    />
+                    <span style={{ fontSize: 56, fontWeight: 700, fontStyle: 'italic', lineHeight: 1 }}>
+                      {stat.suffix}
+                    </span>
+                  </div>
+                  <span className="text-white/60 font-light text-sm uppercase tracking-wider">
+                    {stat.label}
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════ */}
       {/* CONTACT / CTA SECTION                       */}
       {/* ═══════════════════════════════════════════ */}
-      <section id="contact" className="relative z-10 py-24 px-6 bg-[#040c1b]">
+      <section id="contact" className="relative z-10 py-24 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-100 to-blue-400">
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold italic tracking-tight text-white mb-5">
               Ready to Innovate?
             </h2>
             <p className="text-blue-200/50 text-lg mb-10 max-w-2xl mx-auto">
               Partner with us for cutting-edge packaging solutions that set your brand apart.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <button className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-full shadow-xl shadow-blue-600/30 transition-all duration-300 hover:-translate-y-1 active:scale-95 text-lg">
+              <Link to="/contact" className="liquid-glass-strong-blue px-10 py-4 text-white font-bold rounded-full transition-all duration-300 hover:-translate-y-1 active:scale-95 text-lg hover:shadow-[0_0_40px_rgba(59,130,246,0.25)]">
                 Contact Us
-              </button>
-              <button className="px-10 py-4 bg-white/10 hover:bg-white/15 text-white font-bold rounded-full border border-white/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 active:scale-95 text-lg">
+              </Link>
+              <Link to="/products" className="liquid-glass px-10 py-4 text-white font-bold rounded-full transition-all duration-300 hover:-translate-y-1 active:scale-95 text-lg hover:bg-white/[0.06]">
                 View Catalog
-              </button>
+              </Link>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════ */}
-      {/* FOOTER                                      */}
-      {/* ═══════════════════════════════════════════ */}
-      <footer className="relative z-10 py-12 px-6 border-t border-white/[0.06] bg-[#040c1b]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="text-2xl font-bold tracking-tight text-blue-100">
-            Invest<span className="text-white">ComPlast</span>
-          </div>
-          <div className="flex gap-8 text-blue-200/35 text-sm font-medium">
-            <a href="#" className="hover:text-blue-400 transition-colors duration-300">Privacy</a>
-            <a href="#" className="hover:text-blue-400 transition-colors duration-300">Terms</a>
-            <a href="#" className="hover:text-blue-400 transition-colors duration-300">Contact</a>
-          </div>
-          <div className="text-blue-200/20 text-xs">
-            © 2026 InvestComPlast. All rights reserved.
-          </div>
-        </div>
-      </footer>
-
       {/* Ambient background glow effects */}
       <div className="fixed top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/[0.05] blur-[200px] rounded-full pointer-events-none z-0" />
       <div className="fixed bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-400/[0.05] blur-[200px] rounded-full pointer-events-none z-0" />
     </div>
+  );
+}
+
+function Layout() {
+  return (
+    <>
+      <Outlet />
+      <Footer />
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+      </Route>
+    </Routes>
   );
 }
