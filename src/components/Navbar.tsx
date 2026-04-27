@@ -57,7 +57,6 @@ export const Navbar = () => {
           className="bg-white text-black rounded-full px-3 min-[400px]:px-4 md:px-[18px] py-2 text-[12px] min-[400px]:text-[13px] font-semibold flex items-center gap-1 hover:bg-white/90 transition-colors whitespace-nowrap"
         >
           Get in touch
-          <span className="text-[10px]">↗</span>
         </button>
       </div>
 

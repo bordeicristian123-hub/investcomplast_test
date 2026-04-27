@@ -189,7 +189,6 @@ function HomePage() {
                   onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   Explore Products
-                  <span className="text-sm">↗</span>
                 </button>
               </motion.div>
             </div>
