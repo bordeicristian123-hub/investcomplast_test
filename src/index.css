@@ -628,6 +628,8 @@ textarea.icp-glass-field { resize: vertical; min-height: 140px; line-height: 1.5
 
 @media (max-width: 640px) {
   .wup-machine-grid { grid-template-columns: 1fr !important; }
+  .wup-quote-card { padding: 24px 20px !important; }
+  .wup-quote-text { font-size: 17px !important; }
 }
 
 .dark {

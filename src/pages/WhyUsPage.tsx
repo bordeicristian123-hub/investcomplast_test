@@ -151,12 +151,12 @@ function Story() {
               </p>
             </div>
 
-            <div className="liquid-glass-card-blue" style={{ marginTop: 60, padding: '40px 44px', position: 'relative' }}>
+            <div className="liquid-glass-card-blue wup-quote-card" style={{ marginTop: 60, padding: '40px 44px', position: 'relative' }}>
               <div className="wup-grid-bg-tight" style={{ position: 'absolute', inset: 0, opacity: 0.4, pointerEvents: 'none', borderRadius: 'inherit' }} />
               <div style={{ position: 'relative', display: 'flex', gap: 32, alignItems: 'center' }} className="wup-quote-row">
                 <div style={{ fontSize: 80, lineHeight: 0.7, fontStyle: 'italic', color: '#3b82f6', fontWeight: 900 }}>"</div>
                 <div>
-                  <div style={{ fontSize: 22, fontWeight: 600, lineHeight: 1.4, fontStyle: 'italic' }}>
+                  <div className="wup-quote-text" style={{ fontSize: 22, fontWeight: 600, lineHeight: 1.4, fontStyle: 'italic' }}>
                     Twenty years of running blow-molding lines teaches you one thing: there are no shortcuts to consistency. Every bottle either earns the brand it carries — or it doesn't.
                   </div>
                   <div style={{ marginTop: 22, display: 'flex', alignItems: 'center', gap: 14 }}>
