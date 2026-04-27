@@ -18,6 +18,7 @@ import ScrollVideoSection from "./components/ScrollVideoSection";
 const ProductPage = lazy(() => import("./pages/ProductPage"));
 const ProductsPage = lazy(() => import("./pages/ProductsPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
+const WhyUsPage = lazy(() => import("./pages/WhyUsPage"));
 
 function HomePage() {
   const location = useLocation();
@@ -571,6 +572,7 @@ export default function App() {
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/product/:id" element={<ProductPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/why-us" element={<WhyUsPage />} />
       </Route>
     </Routes>
   );

@@ -43,11 +43,7 @@ export const Navbar = () => {
             <Link to="/" className="hover:opacity-100 transition-opacity">Home</Link>
           )}
           <Link to="/products" className="hover:opacity-100 transition-opacity">Products</Link>
-          {isHome ? (
-            <a href="#why-us" className="hover:opacity-100 transition-opacity">Why us?</a>
-          ) : (
-            <Link to="/#why-us" className="hover:opacity-100 transition-opacity">Why us?</Link>
-          )}
+          <Link to="/why-us" className="hover:opacity-100 transition-opacity">Why us?</Link>
           <Link to="/contact" className="hover:opacity-100 transition-opacity">Contact</Link>
         </div>
 
@@ -76,11 +72,7 @@ export const Navbar = () => {
               <Link to="/" onClick={closeMenu} className="px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">Home</Link>
             )}
             <Link to="/products" onClick={closeMenu} className="px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">Products</Link>
-            {isHome ? (
-              <a href="#why-us" onClick={closeMenu} className="px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">Why us?</a>
-            ) : (
-              <Link to="/#why-us" onClick={closeMenu} className="px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">Why us?</Link>
-            )}
+            <Link to="/why-us" onClick={closeMenu} className="px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">Why us?</Link>
             <Link to="/contact" onClick={closeMenu} className="px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">Contact</Link>
           </motion.div>
         )}
