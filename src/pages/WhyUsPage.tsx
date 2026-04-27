@@ -290,7 +290,7 @@ function Advantages() {
 
             <div style={{ position: 'relative', borderLeft: '1px solid rgba(96,165,250,0.15)', overflow: 'hidden', minHeight: 560 }}>
               <div className="wup-dot-grid" style={{ position: 'absolute', inset: 0, opacity: 0.4, zIndex: 1 }} />
-              <div style={{ position: 'absolute', inset: 0, zIndex: 2, display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', padding: 32, gap: 16 }}>
+              <div style={{ position: 'absolute', inset: 0, zIndex: 2, display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', padding: 32, gap: 16 }} className="wup-machine-grid">
                 <div style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <img src="/gallery/machine.png" alt="Automatic blow molding machine" style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 30px 50px rgba(0,0,0,0.55))' }} />
                   <div className="mono" style={{ position: 'absolute', top: 0, left: 0, fontSize: 9, color: '#67e8f9', letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 600 }}>// Auto</div>

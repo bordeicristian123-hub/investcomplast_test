@@ -626,6 +626,10 @@ textarea.icp-glass-field { resize: vertical; min-height: 140px; line-height: 1.5
   .wup-hero-pill { border-radius: 20px; }
 }
 
+@media (max-width: 640px) {
+  .wup-machine-grid { grid-template-columns: 1fr !important; }
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
