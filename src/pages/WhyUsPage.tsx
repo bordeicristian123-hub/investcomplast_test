@@ -81,9 +81,9 @@ function Hero() {
     <header className="wup-section" style={{ paddingTop: 180, paddingBottom: 100, position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <div className="icp-container" style={{ position: 'relative', zIndex: 2 }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 36 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 18px 8px 8px' }} className="liquid-glass-blue">
-            <span style={{ background: '#3b82f6', color: '#fff', borderRadius: 9999, padding: '3px 10px', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' }}>PET Manufacturer</span>
-            <span style={{ color: '#bfdbfe', fontWeight: 500, fontSize: 13 }}>Chișinău · Republic of Moldova</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 18px 8px 8px', flexWrap: 'nowrap' }} className="liquid-glass-blue">
+            <span style={{ background: '#3b82f6', color: '#fff', borderRadius: 9999, padding: '3px 10px', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>PET Manufacturer</span>
+            <span style={{ color: '#bfdbfe', fontWeight: 500, fontSize: 13, whiteSpace: 'nowrap' }}>Chișinău · Republic of Moldova</span>
             <span className="live-dot" style={{ marginLeft: 4 }} />
           </div>
         </div>
