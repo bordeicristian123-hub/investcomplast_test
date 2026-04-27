@@ -566,7 +566,7 @@ function CTA() {
 export default function WhyUsPage() {
   useFadeOnScroll();
   return (
-    <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', background: '#040c1b', color: '#fff', fontFamily: "'Figtree', system-ui, sans-serif" }}>
+    <div style={{ position: 'relative', minHeight: '100vh', overflowX: 'hidden', background: '#040c1b', color: '#fff', fontFamily: "'Figtree', system-ui, sans-serif" }}>
       <Ambient />
       <Navbar />
       <main style={{ position: 'relative', zIndex: 2 }}>

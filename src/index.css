@@ -632,6 +632,14 @@ textarea.icp-glass-field { resize: vertical; min-height: 140px; line-height: 1.5
   .wup-quote-text { font-size: 17px !important; }
 }
 
+@media (max-width: 355px) {
+  .icp-container { padding-inline: 12px !important; }
+  .liquid-glass-card-blue,
+  .wup-quote-card { padding: 18px 14px !important; }
+  .wup-h-hero { font-size: clamp(28px, 8vw, 128px) !important; }
+  .wup-h-section { font-size: clamp(22px, 7vw, 76px) !important; }
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
