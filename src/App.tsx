@@ -341,52 +341,29 @@ function HomePage() {
         <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#040c1b] to-transparent pointer-events-none z-20" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#040c1b] to-transparent pointer-events-none z-20" />
 
-        {/* ── Background light orbs ── */}
-        <motion.div
-          className="absolute top-[-10%] left-[10%] w-[500px] h-[500px] rounded-full bg-blue-600/[0.07] blur-[120px] pointer-events-none"
-          animate={{ x: [0, 60, -30, 40, 0], y: [0, 40, -20, 30, 0], scale: [1, 1.2, 0.9, 1.15, 1] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-[-10%] right-[5%] w-[600px] h-[600px] rounded-full bg-cyan-500/[0.06] blur-[140px] pointer-events-none"
-          animate={{ x: [0, -70, 30, -50, 0], y: [0, -50, 25, -40, 0], scale: [1, 1.25, 0.92, 1.18, 1] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        />
-        <motion.div
-          className="absolute top-[40%] left-[45%] w-[400px] h-[400px] rounded-full bg-blue-400/[0.05] blur-[100px] pointer-events-none"
-          animate={{ x: [0, 50, -40, 20, -30, 0], y: [0, -40, 30, -20, 35, 0], scale: [1, 1.15, 0.88, 1.12, 0.95, 1] }}
-          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        />
+        {/* ── Background light orbs (static) ── */}
+        <div className="absolute top-[-10%] left-[10%] w-[500px] h-[500px] rounded-full bg-blue-600/[0.07] blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-[-10%] right-[5%] w-[600px] h-[600px] rounded-full bg-cyan-500/[0.06] blur-[140px] pointer-events-none" />
+        <div className="absolute top-[40%] left-[45%] w-[400px] h-[400px] rounded-full bg-blue-400/[0.05] blur-[100px] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto relative z-10">
 
           {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex justify-center mb-7"
-          >
+          <div className="flex justify-center mb-7">
             <span className="liquid-glass-blue text-[11px] font-semibold tracking-[0.2em] uppercase text-blue-300 px-5 py-2 rounded-full">
               Our Solutions
             </span>
-          </motion.div>
+          </div>
 
           {/* Heading */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-center mb-16"
-          >
+          <div className="text-center mb-16">
             <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold italic tracking-tight text-white mb-5">
               Quality is everything.
             </h2>
             <p className="text-blue-200/45 max-w-xl mx-auto text-lg leading-relaxed">
               Innovative packaging solutions engineered for performance, sustainability, and precision.
             </p>
-          </motion.div>
+          </div>
 
           {/* Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -412,12 +389,8 @@ function HomePage() {
                 Icon: Lightbulb,
               },
             ].map(({ title, desc, Icon }, i) => (
-              <motion.div
+              <div
                 key={i}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
                 className="liquid-glass-card-blue group p-7 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_0_50px_rgba(59,130,246,0.14)]"
               >
                 {/* Icon container */}
@@ -430,7 +403,7 @@ function HomePage() {
                 <p className="text-blue-200/40 leading-relaxed text-sm group-hover:text-blue-200/60 transition-colors duration-300">
                   {desc}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
 
