@@ -75,7 +75,9 @@ export default function ProductPage() {
                   <motion.img
                     src={product.image}
                     alt={product.name}
+                    decoding="async"
                     className="w-[65%] h-[85%] object-contain drop-shadow-[0_30px_50px_rgba(59,130,246,0.2)]"
+                    style={{ willChange: 'transform' }}
                     animate={{ y: [0, -12, 0] }}
                     transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                   />

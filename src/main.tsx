@@ -4,10 +4,12 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
 import './index.css';
 
+const tree = (
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
+
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </StrictMode>,
+  import.meta.env.DEV ? <StrictMode>{tree}</StrictMode> : tree,
 );

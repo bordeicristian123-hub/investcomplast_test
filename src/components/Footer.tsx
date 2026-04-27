@@ -7,7 +7,7 @@ export function Footer() {
     <footer className="relative z-10 py-12 px-6 border-t border-white/[0.06]">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
         <div>
-          <img src="/gallery/logo/logo.png" alt="InvestComPlast" className="h-14 w-auto" />
+          <img src="/gallery/logo/logo.png" alt="InvestComPlast" loading="lazy" decoding="async" className="h-14 w-auto" />
         </div>
         <div className="flex gap-8 text-blue-200/35 text-sm font-medium">
           <a href="#" className="hover:text-blue-400 transition-colors duration-300">Privacy</a>

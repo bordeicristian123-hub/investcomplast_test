@@ -22,9 +22,28 @@ export default function ScrollVideoSection({ onComplete }: Props) {
 
   const [progress, setProgress] = useState(0); // 0–1 during extraction
   const [ready, setReady] = useState(false);
+  const [shouldExtract, setShouldExtract] = useState(false);
+
+  // ── Phase 0: only start extraction when section is near viewport ──────────
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setShouldExtract(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '600px' }
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
   // ── Phase 1: preload & extract all frames ──────────────────────────────────
   useEffect(() => {
+    if (!shouldExtract) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     let dead = false;
@@ -68,7 +87,7 @@ export default function ScrollVideoSection({ onComplete }: Props) {
     })();
 
     return () => { dead = true; };
-  }, []);
+  }, [shouldExtract]);
 
   // ── Phase 2: scroll interaction once frames are ready ──────────────────────
   useEffect(() => {

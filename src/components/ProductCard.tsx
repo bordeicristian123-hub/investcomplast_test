@@ -27,6 +27,8 @@ export default function ProductCard({ id, name, category, image, index = 0, from
             <img
               src={image}
               alt={name}
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-[70%] h-[85%] object-contain m-auto drop-shadow-[0_20px_40px_rgba(59,130,246,0.15)] transition-transform duration-700 group-hover:scale-110 group-hover:-translate-y-2"
             />
             {/* Subtle glow on hover */}

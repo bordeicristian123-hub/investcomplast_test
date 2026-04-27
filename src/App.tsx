@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { Routes, Route, Outlet, useLocation, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { Palette, Cog, ShieldCheck, Lightbulb } from "lucide-react";
 import { Footer } from "./components/Footer";
 import { TrustBar } from "./components/TrustBar";
@@ -14,22 +14,17 @@ import { Navbar } from "./components/Navbar";
 import AnimatedCounter from "./components/AnimatedCounter";
 import ProductShowcase from "./components/ProductShowcase";
 import ScrollVideoSection from "./components/ScrollVideoSection";
-import ProductPage from "./pages/ProductPage";
-import ProductsPage from "./pages/ProductsPage";
-import ContactPage from "./pages/ContactPage";
+
+const ProductPage = lazy(() => import("./pages/ProductPage"));
+const ProductsPage = lazy(() => import("./pages/ProductsPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
 
 function HomePage() {
   const location = useLocation();
   const [videoComplete, setVideoComplete] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
 
-  useEffect(() => {
-    const onScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const parallaxY = Math.min(scrollY * 0.25, 200);
+  const { scrollY } = useScroll();
+  const bottleParallaxY = useTransform(scrollY, (y) => -Math.min(y * 0.25, 200) * 0.3);
 
   // Activate counters whenever #why-us enters the viewport — covers all cases:
   //  1. Reload / direct link with why-us already visible
@@ -224,9 +219,9 @@ function HomePage() {
             </div>
 
             {/* RIGHT — bottle with spec callouts */}
-            <div
+            <motion.div
               className="w-full md:w-[52%] relative flex justify-center items-center min-h-[480px] mt-8 md:mt-0"
-              style={{ transform: `translateY(${-parallaxY * 0.3}px)` }}
+              style={{ y: bottleParallaxY }}
             >
 
               <motion.div
@@ -244,8 +239,10 @@ function HomePage() {
                   <motion.img
                     src="/gallery/sticla.png"
                     alt="Premium PET bottle"
+                    fetchPriority="high"
+                    decoding="async"
                     className="relative w-[230px] md:w-[280px] lg:w-[330px] h-auto"
-                    style={{ filter: 'drop-shadow(0 40px 60px rgba(0,100,255,0.25))' }}
+                    style={{ filter: 'drop-shadow(0 40px 60px rgba(0,100,255,0.25))', willChange: 'transform' }}
                     animate={{
                       y: [0, -20, 0],
                       rotate: [-2, 2, -2],
@@ -295,7 +292,7 @@ function HomePage() {
                   </motion.div>
                 </div>
               </motion.div>
-            </div>
+            </motion.div>
           </div>
 
           {/* Bottom stat panels — original data, 3 panels */}
@@ -586,7 +583,9 @@ function HomePage() {
 function Layout() {
   return (
     <>
-      <Outlet />
+      <Suspense fallback={<div className="min-h-screen bg-[#040c1b]" />}>
+        <Outlet />
+      </Suspense>
       <Footer />
     </>
   );

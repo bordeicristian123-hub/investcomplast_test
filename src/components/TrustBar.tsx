@@ -29,7 +29,7 @@ export function TrustBar() {
           <div className="trust-logo-row">
             {logos.map((p, i) => (
               <div key={i} className={`trust-logo-item${p.whiteBg ? ' trust-logo-item--white' : ''}`}>
-                <img src={p.logo} alt={p.name} className="trust-logo-img" />
+                <img src={p.logo} alt={p.name} loading="lazy" decoding="async" className="trust-logo-img" />
               </div>
             ))}
           </div>
