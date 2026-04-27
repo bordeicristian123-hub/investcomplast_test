@@ -121,10 +121,10 @@ function Hero() {
 
 /* ─── Info Cards ─── */
 const INFO_CARDS = [
-  { icon: <IPin width={20} height={20} />, label: 'Headquarters', lines: ['Strada Drumul Vilelor 1A', 'Dumbrava, Moldova'], cta: 'Open in Maps' },
-  { icon: <IPhone width={20} height={20} />, label: 'Sales', lines: ['069 096 174'], cta: 'Call sales' },
-  { icon: <IMail width={20} height={20} />, label: 'Email', lines: ['hello@investcomplast.md', 'quotes@investcomplast.md'], cta: 'Compose email' },
-  { icon: <IClock width={20} height={20} />, label: 'Hours', lines: ['Mon–Fri · 08:00 – 19:00 EET', 'Sat · 10:00 – 14:00'], cta: 'Book a call' },
+  { icon: <IPin width={20} height={20} />, label: 'Headquarters', lines: ['Strada Drumul Vilelor 1A', 'Dumbrava, Moldova'], cta: 'Open in Maps', href: 'https://www.google.com/maps/search/?api=1&query=Strada+Drumul+Vilelor+1A,+Dumbrava,+Moldova' },
+  { icon: <IPhone width={20} height={20} />, label: 'Sales', lines: ['069 096 174'], cta: 'Call sales', href: 'tel:+37369096174' },
+  { icon: <IMail width={20} height={20} />, label: 'Email', lines: ['hello@investcomplast.md', 'quotes@investcomplast.md'], cta: 'Compose email', href: 'mailto:hello@investcomplast.md' },
+  { icon: <IClock width={20} height={20} />, label: 'Hours', lines: ['Mon–Fri · 08:00 – 19:00 EET', 'Sat · 10:00 – 14:00'], cta: 'Book a call', href: '#form' },
 ];
 
 function InfoCards() {
@@ -149,13 +149,18 @@ function InfoCards() {
               }}>{l}</div>
             ))}
           </div>
-          <button style={{
-            marginTop: 22, background: 'transparent', border: 0, color: '#60a5fa',
-            padding: 0, fontSize: 13, fontWeight: 600, cursor: 'pointer',
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-          }}>
+          <a
+            href={c.href}
+            target={c.href.startsWith('http') ? '_blank' : undefined}
+            rel={c.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+            style={{
+              marginTop: 22, background: 'transparent', border: 0, color: '#60a5fa',
+              padding: 0, fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none',
+            }}
+          >
             {c.cta} <IArrow width={14} height={14} />
-          </button>
+          </a>
         </div>
       ))}
     </div>
@@ -458,8 +463,20 @@ function OfficeMap() {
       </div>
 
       <div style={{ position: 'absolute', top: 20, right: 20, display: 'flex', gap: 8 }}>
-        <button className="icp-btn-ghost" style={{ padding: '8px 14px', fontSize: 12 }}>Directions</button>
-        <button className="icp-btn-ghost" style={{ padding: '8px 14px', fontSize: 12 }}>Open in Maps ↗</button>
+        <a
+          href="https://www.google.com/maps/dir/?api=1&destination=Strada+Drumul+Vilelor+1A,+Dumbrava,+Moldova"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="icp-btn-ghost"
+          style={{ padding: '8px 14px', fontSize: 12 }}
+        >Directions</a>
+        <a
+          href="https://www.google.com/maps/search/?api=1&query=Strada+Drumul+Vilelor+1A,+Dumbrava,+Moldova"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="icp-btn-ghost"
+          style={{ padding: '8px 14px', fontSize: 12 }}
+        >Open in Maps ↗</a>
       </div>
     </div>
   );
