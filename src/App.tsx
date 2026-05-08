@@ -553,9 +553,18 @@ function HomePage() {
   );
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function Layout() {
   return (
     <>
+      <ScrollToTop />
       <Suspense fallback={<div className="min-h-screen bg-[#040c1b]" />}>
         <Outlet />
       </Suspense>

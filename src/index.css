@@ -584,7 +584,7 @@ textarea.icp-glass-field { resize: vertical; min-height: 140px; line-height: 1.5
 .wup-h-section { font-weight: 800; font-style: italic; letter-spacing: -0.02em; line-height: 1; font-size: clamp(28px, 5vw, 76px); margin: 0; }
 .wup-h-display { font-weight: 900; letter-spacing: -0.04em; line-height: 0.92; }
 
-.wup-orb { position: absolute; border-radius: 9999px; pointer-events: none; filter: blur(120px); }
+.wup-orb { position: fixed; border-radius: 9999px; pointer-events: none; filter: blur(120px); }
 @keyframes wupFloatA { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(40px,-30px) scale(1.15); } }
 @keyframes wupFloatB { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-60px,40px) scale(1.2); } }
 

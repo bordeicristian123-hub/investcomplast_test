@@ -78,13 +78,15 @@ function Ambient() {
 function Hero() {
   const navigate = useNavigate();
   return (
-    <header className="wup-section" style={{ paddingTop: 180, paddingBottom: 100, position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+    <header className="wup-section" style={{ paddingTop: 140, paddingBottom: 80, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <div className="icp-container" style={{ position: 'relative', zIndex: 2 }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 36 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 18px 8px 8px', flexWrap: 'wrap', justifyContent: 'center' }} className="wup-hero-pill">
-            <span style={{ background: '#3b82f6', color: '#fff', borderRadius: 9999, padding: '3px 10px', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' }}>PET Manufacturer</span>
-            <span style={{ color: '#bfdbfe', fontWeight: 500, fontSize: 13 }}>Chișinău · Republic of Moldova</span>
-            <span className="live-dot" style={{ marginLeft: 4 }} />
+            <span style={{ background: '#3b82f6', color: '#fff', borderRadius: 9999, padding: '3px 10px', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>PET Manufacturer</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#bfdbfe', fontWeight: 500, fontSize: 13, whiteSpace: 'nowrap' }}>
+              Chișinău · Moldova
+              <span className="live-dot" />
+            </span>
           </div>
         </div>
 
@@ -100,22 +102,7 @@ function Hero() {
         <div style={{ marginTop: 48, display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
           <button className="icp-btn-primary" onClick={() => navigate('/contact', { state: { scrollTo: 'form' } })}>Get in touch</button>
         </div>
-
-        <div style={{ marginTop: 96, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, borderTop: '1px solid rgba(96,165,250,0.18)', borderBottom: '1px solid rgba(96,165,250,0.18)' }} className="wup-hero-stats">
-          {[
-            { k: '15+', l: 'Years per engineer', sub: 'senior team experience' },
-            { k: '50ml–5L', l: 'Volume range', sub: 'flacon → bulk' },
-            { k: 'Auto.', l: 'Blow molding', sub: 'automatic + semi-automatic' },
-          ].map((s, i) => (
-            <div key={i} style={{ padding: '32px 28px', borderLeft: i === 0 ? 'none' : '1px solid rgba(96,165,250,0.18)' }}>
-              <div className="wup-h-display" style={{ fontSize: 'clamp(36px, 4.5vw, 64px)', color: '#fff', fontStyle: 'italic', lineHeight: 0.95 }}>{s.k}</div>
-              <div style={{ marginTop: 16, fontSize: 14, fontWeight: 600 }}>{s.l}</div>
-              <div className="mono" style={{ marginTop: 4, fontSize: 11, color: 'rgba(147,197,253,0.55)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{s.sub}</div>
-            </div>
-          ))}
-        </div>
       </div>
-      <style>{`.wup-hero-stats { } @media(max-width:960px){.wup-hero-stats{grid-template-columns:1fr!important;}.wup-hero-stats>*{border-left:none!important;}.wup-hero-stats>*+*{border-top:1px solid rgba(96,165,250,0.18);}}`}</style>
     </header>
   );
 }
@@ -125,20 +112,7 @@ function Story() {
   return (
     <section className="wup-section" style={{ padding: '120px 0', position: 'relative' }}>
       <div className="icp-container" style={{ position: 'relative', zIndex: 2 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '0.4fr 1fr', gap: 80, alignItems: 'start' }} className="wup-story-grid">
-          <div style={{ position: 'sticky', top: 120 }}>
-            <div className="eyebrow" style={{ marginBottom: 14 }}>01 · The Company</div>
-            <div className="wup-progress-bar" style={{ width: 60, marginBottom: 28 }} />
-            <div className="mono" style={{ fontSize: 12, color: 'rgba(147,197,253,0.5)', lineHeight: 1.7 }}>
-              BASED IN<br />
-              <span style={{ color: '#fff', fontSize: 18, fontWeight: 600 }}>Chișinău, MD</span><br /><br />
-              ENGINEERS<br />
-              <span style={{ color: '#fff', fontSize: 18, fontWeight: 600 }}>15+ years each</span><br /><br />
-              TECHNOLOGY<br />
-              <span style={{ color: '#fff', fontSize: 18, fontWeight: 600 }}>Automatic + semi-automatic blow molding</span>
-            </div>
-          </div>
-
+        <div>
           <div>
             <h2 className="wup-h-section" style={{ maxWidth: 900 }}>
               We make the bottles<br />
@@ -184,7 +158,7 @@ function Story() {
           </div>
         </div>
       </div>
-      <style>{`@media(max-width:960px){.wup-story-grid{grid-template-columns:1fr!important;gap:40px!important;}.wup-quote-row{flex-direction:column!important;align-items:flex-start!important;gap:16px!important;}}`}</style>
+      <style>{`@media(max-width:960px){.wup-quote-row{flex-direction:column!important;align-items:flex-start!important;gap:16px!important;}}`}</style>
     </section>
   );
 }
@@ -426,22 +400,22 @@ function Process() {
         </div>
 
         <div style={{ position: 'relative', padding: '20px 0 60px' }}>
-          <div className="wup-step-line" style={{ position: 'absolute', top: 124, left: '5%', right: '5%' }} />
-          <div style={{ position: 'absolute', top: 124, left: '5%', width: `${(active / (STEPS.length - 1)) * 90}%`, height: 1, background: 'linear-gradient(90deg, #3b82f6, #67e8f9)', transition: 'width .5s' }} />
+          <div className="wup-step-line wup-step-line-base" style={{ position: 'absolute', top: 124, left: '5%', right: '5%' }} />
+          <div className="wup-step-line-progress" style={{ position: 'absolute', top: 124, left: '5%', width: `${(active / (STEPS.length - 1)) * 90}%`, height: 1, background: 'linear-gradient(90deg, #3b82f6, #67e8f9)', transition: 'width .5s' }} />
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${STEPS.length}, 1fr)`, gap: 0 }} className="wup-proc-steps">
             {STEPS.map((step, i) => {
               const isActive = i === active;
               const isPast = i < active;
               return (
-                <button key={i} onClick={() => setActive(i)} style={{ background: 'transparent', border: 0, cursor: 'pointer', padding: 0, textAlign: 'left', color: 'inherit' }}>
+                <button key={i} onClick={() => setActive(i)} className="wup-step-btn" style={{ background: 'transparent', border: 0, cursor: 'pointer', padding: 0, textAlign: 'left', color: 'inherit', minWidth: 0 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-                    <div className="mono" style={{ fontSize: 11, color: isActive ? '#67e8f9' : 'rgba(147,197,253,0.45)', letterSpacing: '0.2em', transition: 'color .3s' }}>{step.n}</div>
-                    <div style={{ width: 56, height: 56, borderRadius: '50%', background: isActive ? 'linear-gradient(180deg, #3b82f6, #1d4ed8)' : (isPast ? 'rgba(59,130,246,0.15)' : 'rgba(4,12,27,0.7)'), border: `1px solid ${isActive ? 'rgba(147,197,253,0.6)' : 'rgba(96,165,250,0.25)'}`, boxShadow: isActive ? '0 0 30px rgba(59,130,246,0.5)' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isActive ? '#fff' : (isPast ? '#67e8f9' : 'rgba(147,197,253,0.6)'), transition: 'all .35s' }}>
+                    <div className="mono wup-step-num" style={{ fontSize: 11, color: isActive ? '#67e8f9' : 'rgba(147,197,253,0.45)', letterSpacing: '0.2em', transition: 'color .3s' }}>{step.n}</div>
+                    <div className="wup-step-circle" style={{ width: 56, height: 56, borderRadius: '50%', background: isActive ? 'linear-gradient(180deg, #3b82f6, #1d4ed8)' : (isPast ? 'rgba(59,130,246,0.15)' : 'rgba(4,12,27,0.7)'), border: `1px solid ${isActive ? 'rgba(147,197,253,0.6)' : 'rgba(96,165,250,0.25)'}`, boxShadow: isActive ? '0 0 30px rgba(59,130,246,0.5)' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isActive ? '#fff' : (isPast ? '#67e8f9' : 'rgba(147,197,253,0.6)'), transition: 'all .35s' }}>
                       {step.icon}
                     </div>
-                    <div style={{ textAlign: 'center', maxWidth: 160, marginTop: 14 }}>
-                      <div style={{ fontSize: 15, fontWeight: 600, color: isActive ? '#fff' : 'rgba(219,234,254,0.7)', transition: 'color .3s' }}>{step.t}</div>
-                      <div className="mono" style={{ fontSize: 10, color: 'rgba(147,197,253,0.5)', letterSpacing: '0.15em', textTransform: 'uppercase', marginTop: 4 }}>{step.dur}</div>
+                    <div className="wup-step-label" style={{ textAlign: 'center', maxWidth: 160, marginTop: 14 }}>
+                      <div className="wup-step-title" style={{ fontSize: 15, fontWeight: 600, color: isActive ? '#fff' : 'rgba(219,234,254,0.7)', transition: 'color .3s' }}>{step.t}</div>
+                      <div className="mono wup-step-dur" style={{ fontSize: 10, color: 'rgba(147,197,253,0.5)', letterSpacing: '0.15em', textTransform: 'uppercase', marginTop: 4 }}>{step.dur}</div>
                     </div>
                   </div>
                 </button>
@@ -468,7 +442,7 @@ function Process() {
           </div>
         </div>
       </div>
-      <style>{`@media(max-width:960px){.wup-proc-head{grid-template-columns:1fr!important;}.wup-proc-steps{grid-template-columns:repeat(5,1fr)!important;gap:4px;}.wup-proc-detail{grid-template-columns:1fr!important;}}`}</style>
+      <style>{`@media(max-width:960px){.wup-proc-head{grid-template-columns:1fr!important;}.wup-proc-steps{grid-template-columns:repeat(5,1fr)!important;gap:4px;}.wup-proc-detail{grid-template-columns:1fr!important;}}@media(max-width:560px){.wup-step-line-base,.wup-step-line-progress{top:103px!important;}.wup-step-circle{width:40px!important;height:40px!important;}.wup-step-circle svg{width:16px!important;height:16px!important;}.wup-step-label{max-width:100%!important;padding:0 2px!important;}.wup-step-title{font-size:12px!important;line-height:1.2!important;min-height:2.4em!important;display:flex!important;align-items:flex-start!important;justify-content:center!important;}}`}</style>
     </section>
   );
 }
@@ -483,9 +457,9 @@ const VALUES = [
 
 function Values() {
   return (
-    <section className="wup-section" style={{ padding: '120px 0', position: 'relative' }}>
+    <section className="wup-section wup-values-section" style={{ padding: '120px 0', position: 'relative' }}>
       <div className="icp-container" style={{ position: 'relative', zIndex: 2 }}>
-        <div style={{ textAlign: 'center', marginBottom: 70 }}>
+        <div className="wup-values-head" style={{ textAlign: 'center', marginBottom: 70 }}>
           <div className="eyebrow" style={{ marginBottom: 16 }}>05 · Operating Principles</div>
           <h2 className="wup-h-section">
             Four ideas we<br /><span className="gradient-text">don't compromise on.</span>
@@ -494,17 +468,17 @@ function Values() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, border: '1px solid rgba(96,165,250,0.18)', borderRadius: 24, overflow: 'hidden' }} className="wup-val-grid">
           {VALUES.map((v, i) => (
             <div key={i} className="wup-val-cell" style={{ padding: '48px 36px', borderLeft: i === 0 ? 'none' : '1px solid rgba(96,165,250,0.18)', position: 'relative', transition: 'background .35s' }}>
-              <div className="mono" style={{ position: 'absolute', top: 20, right: 24, fontSize: 11, color: 'rgba(147,197,253,0.4)', letterSpacing: '0.2em' }}>0{i + 1}</div>
-              <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(59,130,246,0.18)', border: '1px solid rgba(96,165,250,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#93c5fd', marginBottom: 28 }}>
+              <div className="mono wup-val-num" style={{ position: 'absolute', top: 20, right: 24, fontSize: 11, color: 'rgba(147,197,253,0.4)', letterSpacing: '0.2em' }}>0{i + 1}</div>
+              <div className="wup-val-icon" style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(59,130,246,0.18)', border: '1px solid rgba(96,165,250,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#93c5fd', marginBottom: 28 }}>
                 {v.icon}
               </div>
-              <h3 style={{ fontSize: 24, fontWeight: 700, fontStyle: 'italic', letterSpacing: '-0.015em' }}>{v.t}.</h3>
-              <p style={{ marginTop: 14, fontSize: 14, lineHeight: 1.65, color: 'rgba(191,219,254,0.6)' }}>{v.s}</p>
+              <h3 className="wup-val-title" style={{ fontSize: 24, fontWeight: 700, fontStyle: 'italic', letterSpacing: '-0.015em' }}>{v.t}.</h3>
+              <p className="wup-val-text" style={{ marginTop: 14, fontSize: 14, lineHeight: 1.65, color: 'rgba(191,219,254,0.6)' }}>{v.s}</p>
             </div>
           ))}
         </div>
       </div>
-      <style>{`.wup-val-cell:hover{background:rgba(59,130,246,0.05);}@media(max-width:960px){.wup-val-grid{grid-template-columns:repeat(2,1fr)!important;}.wup-val-grid>*{border-left:none!important;border-top:1px solid rgba(96,165,250,0.18);}.wup-val-grid>*:nth-child(2n){border-left:1px solid rgba(96,165,250,0.18)!important;}.wup-val-grid>*:nth-child(-n+2){border-top:none!important;}}`}</style>
+      <style>{`.wup-val-cell:hover{background:rgba(59,130,246,0.05);}@media(max-width:960px){.wup-val-grid{grid-template-columns:repeat(2,1fr)!important;}.wup-val-grid>*{border-left:none!important;border-top:1px solid rgba(96,165,250,0.18);}.wup-val-grid>*:nth-child(2n){border-left:1px solid rgba(96,165,250,0.18)!important;}.wup-val-grid>*:nth-child(-n+2){border-top:none!important;}}@media(max-width:560px){.wup-values-section{padding:48px 0!important;}.wup-values-head{margin-bottom:32px!important;}.wup-val-grid>*{padding:24px 16px!important;}.wup-val-num{top:12px!important;right:14px!important;font-size:10px!important;}.wup-val-icon{width:38px!important;height:38px!important;border-radius:10px!important;margin-bottom:16px!important;}.wup-val-icon svg{width:18px!important;height:18px!important;}.wup-val-title{font-size:16px!important;}.wup-val-text{margin-top:8px!important;font-size:12px!important;line-height:1.5!important;}}`}</style>
     </section>
   );
 }
@@ -566,7 +540,7 @@ function CTA() {
 export default function WhyUsPage() {
   useFadeOnScroll();
   return (
-    <div style={{ position: 'relative', minHeight: '100vh', overflowX: 'hidden', background: '#040c1b', color: '#fff', fontFamily: "'Figtree', system-ui, sans-serif" }}>
+    <div style={{ position: 'relative', minHeight: '100vh', background: '#040c1b', color: '#fff', fontFamily: "'Figtree', system-ui, sans-serif" }}>
       <Ambient />
       <Navbar />
       <main style={{ position: 'relative', zIndex: 2 }}>
