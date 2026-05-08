@@ -43,7 +43,7 @@ function useCountUp(target: number, duration = 1800, start = false) {
   return val;
 }
 
-/* ── Fade-up on scroll ── */
+/* ── Fade-up on scroll (skips hero — hero animates immediately via CSS) ── */
 function useFadeOnScroll() {
   useEffect(() => {
     const els = document.querySelectorAll<HTMLElement>('.wup-section');
@@ -74,35 +74,234 @@ function Ambient() {
   );
 }
 
-/* ── Hero ── */
+/* ── Hero (V2 — Cinematic backdrop) ── */
 function Hero() {
   const navigate = useNavigate();
+
   return (
-    <header className="wup-section" style={{ paddingTop: 140, paddingBottom: 80, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-      <div className="icp-container" style={{ position: 'relative', zIndex: 2 }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 36 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 18px 8px 8px', flexWrap: 'wrap', justifyContent: 'center' }} className="wup-hero-pill">
-            <span style={{ background: '#3b82f6', color: '#fff', borderRadius: 9999, padding: '3px 10px', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>PET Manufacturer</span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#bfdbfe', fontWeight: 500, fontSize: 13, whiteSpace: 'nowrap' }}>
+    <header className="wup-hero-v2">
+      {/* Backdrop image — large, dimmed, right-biased on desktop / top-anchored on mobile */}
+      <div className="wup-hero-v2__backdrop" aria-hidden="true">
+        <img src="/gallery/why_us_hero_image.png" alt="" className="wup-hero-v2__img" />
+        <div className="wup-hero-v2__veil" />
+        <div className="wup-hero-v2__scanline" />
+      </div>
+
+      {/* Copy block */}
+      <div className="icp-container wup-hero-v2__inner">
+        <div className="wup-hero-v2__copy icp-fade-up icp-d2">
+          <div className="wup-hero-pill wup-hero-v2__pill icp-fade-up icp-d1">
+            <span className="wup-hero-v2__badge">PET Manufacturer</span>
+            <span className="wup-hero-v2__badge-loc">
               Chișinău · Moldova
               <span className="live-dot" />
             </span>
           </div>
-        </div>
 
-        <h1 className="wup-h-hero" style={{ textAlign: 'center', maxWidth: 1200, margin: '0 auto' }}>
-          <span style={{ fontStyle: 'normal' }}>Engineered to</span><br />
-          <span className="gradient-text">contain what matters.</span>
-        </h1>
+          <h1 className="wup-h-hero wup-hero-v2__title">
+            <span style={{ fontStyle: 'normal' }}>Engineered to</span>
+            <br />
+            <span className="gradient-text">contain what matters.</span>
+          </h1>
 
-        <p style={{ marginTop: 36, fontSize: 20, color: 'rgba(191,219,254,0.65)', maxWidth: 720, lineHeight: 1.55, textAlign: 'center', marginInline: 'auto' }}>
-          <span style={{ color: '#fff', fontWeight: 600 }}>InvestComPlast</span> manufactures PET bottles and plastic packaging for the brands that demand the most — custom shapes, sizes, colors and weights, from 50 ml flacons to 5 L containers.
-        </p>
+          <p className="wup-hero-v2__lede icp-fade-up icp-d3">
+            <strong>InvestComPlast</strong> manufactures PET bottles and plastic packaging for
+            brands that demand the most — custom shapes, sizes, colors and weights, from
+            50&nbsp;ml flacons to 5&nbsp;L containers, built on automatic and semi-automatic
+            blow-molding lines.
+          </p>
 
-        <div style={{ marginTop: 48, display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
-          <button className="icp-btn-primary" onClick={() => navigate('/contact', { state: { scrollTo: 'form' } })}>Get in touch</button>
+          <div className="wup-hero-v2__cta icp-fade-up icp-d4">
+            <button
+              className="icp-btn-primary"
+              onClick={() => navigate('/contact', { state: { scrollTo: 'form' } })}
+            >
+              Get in touch
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Capability matrix — horizontal strip on desktop, 2×2 grid on mobile */}
+      <div className="wup-hero-v2__matrix">
+        <span className="mono wup-hero-v2__matrix-label">// CAPABILITY MATRIX</span>
+        <span className="wup-hero-v2__matrix-rule" />
+        <div className="wup-hero-v2__matrix-cells">
+          {[
+            { k: 'BLOW MOLDING', v: 'Auto + Semi' },
+            { k: 'VOLUME',       v: '50 ml — 5 L' },
+            { k: 'RESIN',        v: 'Food-grade PET' },
+            { k: 'DELIVERY',     v: 'Own fleet · MD' },
+          ].map(({ k, v }) => (
+            <div key={k} className="wup-hero-v2__matrix-cell">
+              <div className="mono wup-hero-v2__matrix-key">{k}</div>
+              <div className="wup-hero-v2__matrix-val">{v}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <style>{`
+        .wup-hero-v2 {
+          position: relative;
+          min-height: 100vh;
+          padding-top: 120px;
+          padding-bottom: 120px;
+          display: flex;
+          align-items: center;
+          overflow: hidden;
+        }
+
+        .wup-hero-v2__backdrop {
+          position: absolute; inset: 0; z-index: 1;
+          pointer-events: none; overflow: hidden;
+          -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 70%, transparent 100%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 70%, transparent 100%);
+        }
+        .wup-hero-v2__img {
+          position: absolute;
+          top: 50%; right: -4%;
+          transform: translateY(-50%);
+          width: 75%;
+          min-width: 720px;
+          max-height: 92%;
+          object-fit: contain;
+          object-position: right center;
+          opacity: 0.5;
+          filter: drop-shadow(0 0 80px rgba(59,130,246,0.4)) saturate(1.2);
+          mix-blend-mode: screen;
+        }
+        .wup-hero-v2__veil {
+          position: absolute; inset: 0;
+          background: linear-gradient(90deg,
+            rgba(4,12,27,0.85) 0%,
+            rgba(4,12,27,0.4) 60%,
+            rgba(4,12,27,0) 100%);
+        }
+        .wup-hero-v2__scanline {
+          position: absolute; left: 0; right: 0;
+          height: 220px;
+          background: linear-gradient(180deg, transparent, rgba(103,232,249,0.08), transparent);
+          animation: wupV2Scan 5s ease-in-out infinite;
+        }
+        @keyframes wupV2Scan {
+          0%   { transform: translateY(-30%); opacity: 0; }
+          10%  { opacity: 0.7; }
+          90%  { opacity: 0.7; }
+          100% { transform: translateY(130%); opacity: 0; }
+        }
+
+        .wup-hero-v2__inner {
+          position: relative;
+          z-index: 5;
+          width: 100%;
+        }
+        .wup-hero-v2__copy { max-width: 640px; }
+        .wup-hero-v2__title {
+          font-size: clamp(40px, 5.4vw, 88px) !important;
+          line-height: 1.02;
+        }
+        .wup-hero-v2__pill {
+          display: inline-flex; align-items: center; gap: 10px;
+          padding: 8px 18px 8px 8px;
+        }
+        .wup-hero-v2__badge {
+          background: #3b82f6; color: #fff;
+          border-radius: 9999px;
+          padding: 3px 10px;
+          font-size: 10px; font-weight: 700;
+          letter-spacing: 0.14em; text-transform: uppercase;
+          white-space: nowrap;
+        }
+        .wup-hero-v2__badge-loc {
+          display: inline-flex; align-items: center; gap: 8px;
+          color: #bfdbfe; font-weight: 500; font-size: 13px; white-space: nowrap;
+        }
+        .wup-hero-v2__title { margin-top: 32px; }
+        .wup-hero-v2__lede {
+          margin-top: 32px;
+          font-size: 19px; line-height: 1.55;
+          color: rgba(191,219,254,0.72);
+          max-width: 580px;
+        }
+        .wup-hero-v2__lede strong { color: #fff; font-weight: 600; }
+        .wup-hero-v2__cta {
+          margin-top: 40px;
+          display: flex; gap: 14px; flex-wrap: wrap;
+        }
+
+        .wup-hero-v2__matrix {
+          position: absolute;
+          left: 48px; right: 48px; bottom: 48px;
+          z-index: 6;
+          display: flex; align-items: center; gap: 24px;
+        }
+        .wup-hero-v2__matrix-label {
+          font-size: 10px;
+          color: rgba(147,197,253,0.55);
+          letter-spacing: 0.22em;
+          white-space: nowrap;
+        }
+        .wup-hero-v2__matrix-rule {
+          flex: 1;
+          height: 1px;
+          background: repeating-linear-gradient(90deg,
+            rgba(147,197,253,0.4) 0 6px,
+            transparent 6px 14px);
+        }
+        .wup-hero-v2__matrix-cells {
+          display: flex; gap: 32px; flex-wrap: wrap;
+        }
+        .wup-hero-v2__matrix-cell { min-width: 0; }
+        .wup-hero-v2__matrix-key {
+          font-size: 9px;
+          color: #93c5fd;
+          letter-spacing: 0.22em;
+        }
+        .wup-hero-v2__matrix-val {
+          font-size: 13px; font-weight: 600; color: #fff;
+          margin-top: 4px;
+        }
+
+
+        @media (max-width: 760px) {
+          .wup-hero-v2 {
+            padding-top: 240px;
+            padding-bottom: 200px;
+            min-height: auto;
+          }
+          .wup-hero-v2__img {
+            top: 50%; right: -25%;
+            transform: translateY(-50%);
+            width: 150%;
+            max-height: none;
+            opacity: 0.42;
+            filter: drop-shadow(0 0 60px rgba(59,130,246,0.4)) saturate(1.2);
+          }
+          .wup-hero-v2__veil {
+            background: linear-gradient(180deg,
+              rgba(4,12,27,0.2) 0%,
+              rgba(4,12,27,0.55) 35%,
+              rgba(4,12,27,0.95) 70%);
+          }
+          .wup-hero-v2__scanline { height: 140px; }
+
+          .wup-hero-v2__pill { padding: 6px 12px 6px 6px; }
+          .wup-hero-v2__badge { font-size: 9px; padding: 2px 8px; }
+          .wup-hero-v2__badge-loc { font-size: 11px; gap: 6px; }
+          .wup-hero-v2__badge-loc .live-dot { width: 6px; height: 6px; }
+
+          .wup-hero-v2__title  { margin-top: 24px; font-size: clamp(36px, 11vw, 56px) !important; line-height: 1.05; }
+          .wup-hero-v2__lede   { margin-top: 20px; font-size: 14px; }
+          .wup-hero-v2__cta    { margin-top: 24px; }
+          .wup-hero-v2__cta .icp-btn-primary {
+            width: 100%; justify-content: center;
+            padding: 14px 22px; font-size: 14px;
+          }
+
+          .wup-hero-v2__matrix { display: none; }
+        }
+      `}</style>
     </header>
   );
 }
@@ -110,7 +309,7 @@ function Hero() {
 /* ── Story / Mission ── */
 function Story() {
   return (
-    <section className="wup-section" style={{ padding: '120px 0', position: 'relative' }}>
+    <section className="wup-section wup-story-section" style={{ padding: '120px 0', position: 'relative' }}>
       <div className="icp-container" style={{ position: 'relative', zIndex: 2 }}>
         <div>
           <div>
@@ -158,7 +357,7 @@ function Story() {
           </div>
         </div>
       </div>
-      <style>{`@media(max-width:960px){.wup-quote-row{flex-direction:column!important;align-items:flex-start!important;gap:16px!important;}}`}</style>
+      <style>{`@media(max-width:960px){.wup-quote-row{flex-direction:column!important;align-items:flex-start!important;gap:16px!important;}}@media(max-width:760px){.wup-story-section{padding:40px 0 80px!important;}}`}</style>
     </section>
   );
 }
@@ -487,9 +686,9 @@ function Values() {
 function CTA() {
   const navigate = useNavigate();
   return (
-    <section className="wup-section" style={{ padding: '120px 0 160px', position: 'relative' }}>
+    <section className="wup-section wup-cta-section" style={{ padding: '120px 0 160px', position: 'relative' }}>
       <div className="icp-container" style={{ position: 'relative', zIndex: 2 }}>
-        <div className="liquid-glass-card-blue" style={{ padding: '80px 64px', position: 'relative', overflow: 'hidden' }}>
+        <div className="liquid-glass-card-blue wup-cta-card" style={{ padding: '80px 64px', position: 'relative', overflow: 'hidden' }}>
           <div className="wup-grid-bg-tight" style={{ position: 'absolute', inset: 0, opacity: 0.4 }} />
           <div style={{ position: 'absolute', top: '-50%', left: '20%', width: 700, height: 700, background: 'radial-gradient(circle, rgba(59,130,246,0.4), transparent 60%)', filter: 'blur(80px)' }} />
           <div style={{ position: 'absolute', bottom: '-50%', right: '10%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(34,211,238,0.25), transparent 60%)', filter: 'blur(60px)' }} />
@@ -510,20 +709,20 @@ function CTA() {
               </div>
             </div>
 
-            <div className="liquid-glass-card-blue" style={{ padding: 36, background: 'rgba(4,12,27,0.5)' }}>
+            <div className="liquid-glass-card-blue wup-cta-direct" style={{ padding: 36, background: 'rgba(4,12,27,0.5)' }}>
               <div className="mono" style={{ fontSize: 11, color: '#67e8f9', letterSpacing: '0.2em', marginBottom: 24 }}>DIRECT LINE</div>
               {[
                 { i: <IPin size={18} />, l: 'Strada Drumul Vilelor 1A', s: 'Dumbrava, Moldova · Headquarters' },
                 { i: <IPhone size={18} />, l: '069 096 174', s: 'Sales · Mon–Fri' },
                 { i: <IMail size={18} />, l: 'hello@investcomplast.md', s: 'Reply within 1 business day' },
               ].map((row, i) => (
-                <div key={i} style={{ display: 'flex', gap: 16, paddingBlock: 18, borderTop: i === 0 ? 'none' : '1px solid rgba(96,165,250,0.15)' }}>
-                  <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(96,165,250,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#93c5fd', flexShrink: 0 }}>
+                <div key={i} className="wup-cta-row" style={{ display: 'flex', gap: 16, paddingBlock: 18, borderTop: i === 0 ? 'none' : '1px solid rgba(96,165,250,0.15)' }}>
+                  <div className="wup-cta-row-icon" style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(96,165,250,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#93c5fd', flexShrink: 0 }}>
                     {row.i}
                   </div>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 600 }}>{row.l}</div>
-                    <div className="mono" style={{ fontSize: 11, color: 'rgba(147,197,253,0.55)', letterSpacing: '0.08em', marginTop: 4 }}>{row.s}</div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div className="wup-cta-row-label" style={{ fontSize: 14, fontWeight: 600, wordBreak: 'break-word' }}>{row.l}</div>
+                    <div className="mono wup-cta-row-sub" style={{ fontSize: 11, color: 'rgba(147,197,253,0.55)', letterSpacing: '0.08em', marginTop: 4 }}>{row.s}</div>
                   </div>
                 </div>
               ))}
@@ -531,7 +730,7 @@ function CTA() {
           </div>
         </div>
       </div>
-      <style>{`@media(max-width:960px){.wup-cta-grid{grid-template-columns:1fr!important;}}`}</style>
+      <style>{`@media(max-width:960px){.wup-cta-grid{grid-template-columns:1fr!important;}}@media(max-width:560px){.wup-cta-section{padding:60px 0 80px!important;}.wup-cta-card{padding:40px 16px!important;}.wup-cta-direct{padding:20px 14px!important;}.wup-cta-grid{gap:28px!important;}.wup-cta-row{gap:12px!important;padding-block:14px!important;}.wup-cta-row-icon{width:30px!important;height:30px!important;border-radius:8px!important;}.wup-cta-row-icon svg{width:14px!important;height:14px!important;}.wup-cta-row-label{font-size:13px!important;}.wup-cta-row-sub{font-size:10px!important;letter-spacing:0.04em!important;}}`}</style>
     </section>
   );
 }
