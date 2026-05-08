@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 const EXTRACT_FPS = 20;
 // How many pixels of scroll delta advance one frame
 const PX_PER_FRAME = 22;
+// Mobile touch scrub multiplier — finger drags advance frames 1.5x faster than wheel
+const TOUCH_SCRUB_MULTIPLIER = 1.5;
 
 interface Props {
   onComplete?: () => void;
@@ -183,9 +185,9 @@ export default function ScrollVideoSection({ onComplete }: Props) {
       const centred = isCentred();
       inViewRef.current = centred;
       if (!centred) { unlock(); return; }
-      const delta = touchYRef.current - e.touches[0].clientY;
+      const rawDelta = touchYRef.current - e.touches[0].clientY;
       touchYRef.current = e.touches[0].clientY;
-      if (consume(delta)) e.preventDefault();
+      if (consume(rawDelta * TOUCH_SCRUB_MULTIPLIER)) e.preventDefault();
     }
 
     // Scroll listener still handles unlock when section drifts off centre
