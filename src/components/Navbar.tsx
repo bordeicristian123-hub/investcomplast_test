@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "motion/react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 
 export const Navbar = () => {
@@ -10,6 +10,15 @@ export const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
+
+  // Lock body scroll while the slide-out menu is open
+  useEffect(() => {
+    if (menuOpen) {
+      const original = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = original; };
+    }
+  }, [menuOpen]);
 
   return (
     <motion.nav
@@ -56,25 +65,103 @@ export const Navbar = () => {
         </button>
       </div>
 
-      {/* Dropdown menu — mobile only */}
+      {/* Slide-in mobile menu (80% width drawer + scrim) */}
       <AnimatePresence>
         {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden liquid-glass mt-3 rounded-2xl p-2 flex flex-col min-w-[220px]"
-          >
-            {isHome ? (
-              <a href="#home" onClick={closeMenu} className="px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">Home</a>
-            ) : (
-              <Link to="/" onClick={closeMenu} className="px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">Home</Link>
-            )}
-            <Link to="/products" onClick={closeMenu} className="px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">Products</Link>
-            <Link to="/why-us" onClick={closeMenu} className="px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">Why us?</Link>
-            <Link to="/contact" onClick={closeMenu} className="px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">Contact</Link>
-          </motion.div>
+          <>
+            {/* Backdrop scrim — tap to close */}
+            <motion.div
+              key="mobile-menu-scrim"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={closeMenu}
+              className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            />
+
+            {/* Drawer panel — 80% of viewport, slides from left */}
+            <motion.div
+              key="mobile-menu"
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              className="md:hidden fixed top-0 left-0 bottom-0 z-50 flex flex-col text-white shadow-2xl"
+              style={{
+                width: '80%',
+                background:
+                  'radial-gradient(ellipse at 80% -10%, rgba(59,130,246,0.25), transparent 55%), radial-gradient(ellipse at -10% 110%, rgba(34,211,238,0.18), transparent 55%), #040c1b',
+                borderRight: '1px solid rgba(96,165,250,0.18)',
+              }}
+            >
+              {/* Header: logo + dedicated close button */}
+              <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-white/10">
+                <span className="font-black text-lg tracking-tighter">Investcomplast</span>
+                <button
+                  onClick={closeMenu}
+                  aria-label="Close menu"
+                  className="p-2 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center text-white"
+                >
+                  <X size={22} />
+                </button>
+              </div>
+
+              {/* Nav links — large, tappable, staggered fade-in */}
+              <nav className="flex-1 flex flex-col justify-center px-7 gap-1">
+                {[
+                  { label: 'Home', to: '/', anchor: '#home' },
+                  { label: 'Products', to: '/products' },
+                  { label: 'Why us?', to: '/why-us' },
+                  { label: 'Contact', to: '/contact' },
+                ].map((item, i) => {
+                  const linkProps = {
+                    onClick: closeMenu,
+                    className:
+                      'group flex items-center justify-between py-5 border-b border-white/10 text-[28px] font-black tracking-tighter italic hover:opacity-80 transition-opacity',
+                  };
+                  return (
+                    <motion.div
+                      key={item.label}
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.4, delay: 0.15 + i * 0.07, ease: 'easeOut' }}
+                    >
+                      {item.anchor && isHome ? (
+                        <a href={item.anchor} {...linkProps}>
+                          <span>{item.label}</span>
+                          <span className="text-white/40 text-sm font-mono not-italic font-normal">0{i + 1}</span>
+                        </a>
+                      ) : (
+                        <Link to={item.to} {...linkProps}>
+                          <span>{item.label}</span>
+                          <span className="text-white/40 text-sm font-mono not-italic font-normal">0{i + 1}</span>
+                        </Link>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </nav>
+
+              {/* Footer: CTA + location stamp */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.45 }}
+                className="px-6 pb-8 pt-4 flex flex-col gap-3 border-t border-white/10"
+              >
+                <button
+                  onClick={() => { closeMenu(); navigate('/contact', { state: { scrollTo: 'form' } }); }}
+                  className="w-full bg-white text-black rounded-full py-3.5 text-sm font-semibold hover:bg-white/90 transition-colors"
+                >
+                  Get in touch
+                </button>
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/45 text-center">
+                  Chișinău · Moldova
+                </div>
+              </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </motion.nav>
