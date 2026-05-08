@@ -69,15 +69,16 @@ export const Navbar = () => {
       <AnimatePresence>
         {menuOpen && (
           <>
-            {/* Backdrop scrim — tap to close */}
+            {/* Backdrop scrim — tap to close (no blur for mobile perf) */}
             <motion.div
               key="mobile-menu-scrim"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
               onClick={closeMenu}
-              className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+              className="md:hidden fixed inset-0 z-40 bg-black/60"
+              style={{ willChange: 'opacity' }}
             />
 
             {/* Drawer panel — 80% of viewport, slides from left */}
@@ -86,13 +87,17 @@ export const Navbar = () => {
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ type: 'tween', duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
               className="md:hidden fixed top-0 left-0 bottom-0 z-50 flex flex-col text-white shadow-2xl"
               style={{
                 width: '80%',
                 background:
                   'radial-gradient(ellipse at 80% -10%, rgba(59,130,246,0.25), transparent 55%), radial-gradient(ellipse at -10% 110%, rgba(34,211,238,0.18), transparent 55%), #040c1b',
                 borderRight: '1px solid rgba(96,165,250,0.18)',
+                willChange: 'transform',
+                transform: 'translateZ(0)',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
               }}
             >
               {/* Header: logo + dedicated close button */}
@@ -107,57 +112,56 @@ export const Navbar = () => {
                 </button>
               </div>
 
-              {/* Nav links — large, tappable, staggered fade-in */}
-              <nav className="flex-1 flex flex-col justify-center px-7 gap-1">
-                {[
-                  { label: 'Home', to: '/', anchor: '#home' },
-                  { label: 'Products', to: '/products' },
-                  { label: 'Why us?', to: '/why-us' },
-                  { label: 'Contact', to: '/contact' },
-                ].map((item, i) => {
-                  const linkProps = {
-                    onClick: closeMenu,
-                    className:
-                      'group flex items-center justify-between py-5 border-b border-white/10 text-[28px] font-black tracking-tighter italic hover:opacity-80 transition-opacity',
-                  };
-                  return (
-                    <motion.div
-                      key={item.label}
-                      initial={{ opacity: 0, x: -30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.4, delay: 0.15 + i * 0.07, ease: 'easeOut' }}
-                    >
-                      {item.anchor && isHome ? (
-                        <a href={item.anchor} {...linkProps}>
-                          <span>{item.label}</span>
-                          <span className="text-white/40 text-sm font-mono not-italic font-normal">0{i + 1}</span>
-                        </a>
-                      ) : (
-                        <Link to={item.to} {...linkProps}>
-                          <span>{item.label}</span>
-                          <span className="text-white/40 text-sm font-mono not-italic font-normal">0{i + 1}</span>
-                        </Link>
-                      )}
-                    </motion.div>
-                  );
-                })}
-              </nav>
-
-              {/* Footer: CTA + location stamp */}
+              {/* Inner content fades in once drawer settles — single fade, no per-link transforms */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.45 }}
-                className="px-6 pb-8 pt-4 flex flex-col gap-3 border-t border-white/10"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25, delay: 0.18, ease: 'easeOut' }}
+                className="flex-1 flex flex-col"
               >
-                <button
-                  onClick={() => { closeMenu(); navigate('/contact', { state: { scrollTo: 'form' } }); }}
-                  className="w-full bg-white text-black rounded-full py-3.5 text-sm font-semibold hover:bg-white/90 transition-colors"
-                >
-                  Get in touch
-                </button>
-                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/45 text-center">
-                  Chișinău · Moldova
+                {/* Nav links */}
+                <nav className="flex-1 flex flex-col justify-center px-7 gap-1">
+                  {[
+                    { label: 'Home', to: '/', anchor: '#home' },
+                    { label: 'Products', to: '/products' },
+                    { label: 'Why us?', to: '/why-us' },
+                    { label: 'Contact', to: '/contact' },
+                  ].map((item, i) => {
+                    const linkProps = {
+                      onClick: closeMenu,
+                      className:
+                        'group flex items-center justify-between py-5 border-b border-white/10 text-[28px] font-black tracking-tighter italic hover:opacity-80 transition-opacity',
+                    };
+                    return (
+                      <div key={item.label}>
+                        {item.anchor && isHome ? (
+                          <a href={item.anchor} {...linkProps}>
+                            <span>{item.label}</span>
+                            <span className="text-white/40 text-sm font-mono not-italic font-normal">0{i + 1}</span>
+                          </a>
+                        ) : (
+                          <Link to={item.to} {...linkProps}>
+                            <span>{item.label}</span>
+                            <span className="text-white/40 text-sm font-mono not-italic font-normal">0{i + 1}</span>
+                          </Link>
+                        )}
+                      </div>
+                    );
+                  })}
+                </nav>
+
+                {/* Footer: CTA + location stamp */}
+                <div className="px-6 pb-8 pt-4 flex flex-col gap-3 border-t border-white/10">
+                  <button
+                    onClick={() => { closeMenu(); navigate('/contact', { state: { scrollTo: 'form' } }); }}
+                    className="w-full bg-white text-black rounded-full py-3.5 text-sm font-semibold hover:bg-white/90 transition-colors"
+                  >
+                    Get in touch
+                  </button>
+                  <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/45 text-center">
+                    Chișinău · Moldova
+                  </div>
                 </div>
               </motion.div>
             </motion.div>
