@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 const EXTRACT_FPS = 20;
 // How many pixels of scroll delta advance one frame
 const PX_PER_FRAME = 22;
-// Mobile touch scrub multiplier — finger drags advance frames 3x faster than wheel
-const TOUCH_SCRUB_MULTIPLIER = 3;
+// Mobile touch scrub multiplier — finger drags advance frames 5x faster than wheel
+const TOUCH_SCRUB_MULTIPLIER = 5;
 
 interface Props {
   onComplete?: () => void;
