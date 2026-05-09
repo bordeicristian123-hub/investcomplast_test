@@ -153,21 +153,27 @@ function Hero() {
         }
 
         .wup-hero-v2__backdrop {
-          position: absolute; inset: 0; z-index: 1;
+          position: absolute;
+          top: 0; bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 100%;
+          max-width: 1280px;
+          z-index: 1;
           pointer-events: none; overflow: hidden;
           -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 70%, transparent 100%);
           mask-image: linear-gradient(180deg, #000 0%, #000 70%, transparent 100%);
         }
         .wup-hero-v2__img {
           position: absolute;
-          top: 50%; right: -4%;
+          top: 50%; right: 48px;
           transform: translateY(-50%);
-          width: 75%;
-          min-width: 720px;
+          width: 58%;
+          max-width: 720px;
           max-height: 92%;
           object-fit: contain;
           object-position: right center;
-          opacity: 0.5;
+          opacity: 0.55;
           filter: drop-shadow(0 0 80px rgba(59,130,246,0.4)) saturate(1.2);
           mix-blend-mode: screen;
         }
