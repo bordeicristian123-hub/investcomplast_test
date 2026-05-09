@@ -105,7 +105,7 @@ function Hero() {
           </h1>
 
           <p className="wup-hero-v2__lede icp-fade-up icp-d3">
-            <strong>InvestComPlast</strong> manufactures PET bottles and plastic packaging for
+            <strong>Investcomplast</strong> manufactures PET bottles and plastic packaging for
             brands that demand the most — custom shapes, sizes, colors and weights, from
             50&nbsp;ml flacons to 5&nbsp;L containers, built on automatic and semi-automatic
             blow-molding lines.
@@ -337,7 +337,7 @@ function Story() {
                     <div style={{ width: 40, height: 40, borderRadius: 9999, background: 'linear-gradient(135deg, #3b82f6, #67e8f9)' }} />
                     <div>
                       <div style={{ fontSize: 14, fontWeight: 600 }}>Lead Engineering Team</div>
-                      <div className="mono" style={{ fontSize: 11, color: 'rgba(147,197,253,0.6)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>InvestComPlast · Chișinău</div>
+                      <div className="mono" style={{ fontSize: 11, color: 'rgba(147,197,253,0.6)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Investcomplast · Chișinău</div>
                     </div>
                   </div>
                 </div>
@@ -433,7 +433,7 @@ function Advantages() {
       <div className="icp-container" style={{ position: 'relative', zIndex: 2 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'end', marginBottom: 80 }} className="wup-adv-head">
           <div>
-            <div className="eyebrow" style={{ marginBottom: 16 }}>02 · Why InvestComPlast</div>
+            <div className="eyebrow" style={{ marginBottom: 16 }}>02 · Why Investcomplast</div>
             <h2 className="wup-h-section">
               Six reasons<br />
               <span style={{ color: 'rgba(191,219,254,0.4)' }}>brands keep</span><br />
@@ -715,7 +715,7 @@ function CTA() {
               {[
                 { i: <IPin size={18} />, l: 'Strada Drumul Vilelor 1A', s: 'Dumbrava, Moldova · Headquarters' },
                 { i: <IPhone size={18} />, l: '069 096 174', s: 'Sales · Mon–Fri' },
-                { i: <IMail size={18} />, l: 'hello@investcomplast.md', s: 'Reply within 1 business day' },
+                { i: <IMail size={18} />, l: 'investcomplast@gmail.com', s: 'Reply within 1 business day' },
               ].map((row, i) => (
                 <div key={i} className="wup-cta-row" style={{ display: 'flex', gap: 16, paddingBlock: 18, borderTop: i === 0 ? 'none' : '1px solid rgba(96,165,250,0.15)' }}>
                   <div className="wup-cta-row-icon" style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(96,165,250,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#93c5fd', flexShrink: 0 }}>

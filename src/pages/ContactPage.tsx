@@ -123,7 +123,7 @@ function Hero() {
 const INFO_CARDS = [
   { icon: <IPin width={20} height={20} />, label: 'Headquarters', lines: ['Strada Drumul Vilelor 1A', 'Dumbrava, Moldova'], cta: 'Open in Maps', href: 'https://www.google.com/maps/search/?api=1&query=Strada+Drumul+Vilelor+1A,+Dumbrava,+Moldova' },
   { icon: <IPhone width={20} height={20} />, label: 'Sales', lines: ['069 096 174'], cta: 'Call sales', href: 'tel:+37369096174' },
-  { icon: <IMail width={20} height={20} />, label: 'Email', lines: ['hello@investcomplast.md', 'quotes@investcomplast.md'], cta: 'Compose email', href: 'mailto:hello@investcomplast.md' },
+  { icon: <IMail width={20} height={20} />, label: 'Email', lines: ['investcomplast@gmail.com'], cta: 'Compose email', href: 'mailto:investcomplast@gmail.com' },
   { icon: <IClock width={20} height={20} />, label: 'Hours', lines: ['Mon–Fri · 08:00 – 19:00 EET', 'Sat · 10:00 – 14:00'], cta: 'Book a call', href: '#form' },
 ];
 

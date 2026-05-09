@@ -7,7 +7,7 @@ export function Footer() {
     <footer className="relative z-10 py-12 px-6 border-t border-white/[0.06]">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
         <div>
-          <img src="/gallery/logo/logo.png" alt="InvestComPlast" loading="lazy" decoding="async" className="h-14 w-auto" />
+          <img src="/gallery/logo/logo.png" alt="Investcomplast" loading="lazy" decoding="async" className="h-14 w-auto" />
         </div>
         <div className="flex gap-8 text-blue-200/35 text-sm font-medium">
           <a href="#" className="hover:text-blue-400 transition-colors duration-300">Privacy</a>
@@ -18,7 +18,7 @@ export function Footer() {
           {[
             { Icon: Instagram, href: '#' },
             { Icon: Facebook, href: '#' },
-            { Icon: Mail, href: 'mailto:hello@investcomplast.md' },
+            { Icon: Mail, href: 'mailto:investcomplast@gmail.com' },
           ].map(({ Icon, href }, i) => (
             <motion.a
               key={i}
@@ -32,7 +32,7 @@ export function Footer() {
           ))}
         </div>
         <div className="text-blue-200/20 text-xs">
-          © 2026 InvestComPlast. All rights reserved.
+          © 2026 Investcomplast. All rights reserved.
         </div>
       </div>
     </footer>
