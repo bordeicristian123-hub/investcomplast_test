@@ -26,8 +26,19 @@ export default function ScrollVideoSection({ onComplete }: Props) {
   const [ready, setReady] = useState(false);
   const [shouldExtract, setShouldExtract] = useState(false);
 
+  // Detect touch/coarse-pointer devices (phones, most tablets). On iOS the
+  // frame-extraction path blows past Safari's video memory cap and the
+  // body-overflow scroll lock fights momentum scrolling, which breaks the
+  // backdrop-filter glass layers. Render a plain autoplay video instead.
+  const [isTouchDevice] = useState(() =>
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(hover: none) and (pointer: coarse)').matches,
+  );
+
   // ── Phase 0: only start extraction when section is near viewport ──────────
   useEffect(() => {
+    if (isTouchDevice) return;
     const section = sectionRef.current;
     if (!section) return;
     const observer = new IntersectionObserver(
@@ -41,7 +52,7 @@ export default function ScrollVideoSection({ onComplete }: Props) {
     );
     observer.observe(section);
     return () => observer.disconnect();
-  }, []);
+  }, [isTouchDevice]);
 
   // ── Phase 1: preload & extract all frames ──────────────────────────────────
   useEffect(() => {
@@ -250,6 +261,43 @@ export default function ScrollVideoSection({ onComplete }: Props) {
       unlock();
     };
   }, [ready]);
+
+  if (isTouchDevice) {
+    return (
+      <section
+        ref={sectionRef}
+        className="h-[30vh] md:h-[55vh]"
+        style={{ position: 'relative', width: '100%' }}
+      >
+        <div
+          style={{
+            maxWidth: '80rem',
+            width: '100%',
+            height: '100%',
+            margin: '0 auto',
+            position: 'relative',
+            overflow: 'hidden',
+            maskImage:
+              'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 12%, black 28%, black 75%, rgba(0,0,0,0.5) 90%, transparent 100%)',
+            WebkitMaskImage:
+              'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 12%, black 28%, black 75%, rgba(0,0,0,0.5) 90%, transparent 100%)',
+          }}
+        >
+          <video
+            src="/gallery/van_explosion.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            disablePictureInPicture
+            webkit-playsinline="true"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[125%] h-auto max-w-none"
+          />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
