@@ -122,25 +122,6 @@ function Hero() {
         </div>
       </div>
 
-      {/* Capability matrix — horizontal strip on desktop, 2×2 grid on mobile */}
-      <div className="wup-hero-v2__matrix">
-        <span className="mono wup-hero-v2__matrix-label">// CAPABILITY MATRIX</span>
-        <span className="wup-hero-v2__matrix-rule" />
-        <div className="wup-hero-v2__matrix-cells">
-          {[
-            { k: 'BLOW MOLDING', v: 'Auto + Semi' },
-            { k: 'VOLUME',       v: '50 ml — 5 L' },
-            { k: 'RESIN',        v: 'Food-grade PET' },
-            { k: 'DELIVERY',     v: 'Own fleet · MD' },
-          ].map(({ k, v }) => (
-            <div key={k} className="wup-hero-v2__matrix-cell">
-              <div className="mono wup-hero-v2__matrix-key">{k}</div>
-              <div className="wup-hero-v2__matrix-val">{v}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <style>{`
         .wup-hero-v2 {
           position: relative;
@@ -161,10 +142,10 @@ function Hero() {
         .wup-hero-v2__img {
           position: absolute;
           top: 50%;
-          right: max(48px, calc((100% - 1280px) / 2 + 48px));
+          right: max(0px, calc((100% - 1280px) / 2));
           transform: translateY(-50%);
-          width: 70%;
-          max-width: 900px;
+          width: 62%;
+          max-width: 820px;
           max-height: 96%;
           object-fit: contain;
           object-position: right center;
@@ -231,40 +212,6 @@ function Hero() {
           display: flex; gap: 14px; flex-wrap: wrap;
         }
 
-        .wup-hero-v2__matrix {
-          position: absolute;
-          left: 48px; right: 48px; bottom: 48px;
-          z-index: 6;
-          display: flex; align-items: center; gap: 24px;
-        }
-        .wup-hero-v2__matrix-label {
-          font-size: 10px;
-          color: rgba(147,197,253,0.55);
-          letter-spacing: 0.22em;
-          white-space: nowrap;
-        }
-        .wup-hero-v2__matrix-rule {
-          flex: 1;
-          height: 1px;
-          background: repeating-linear-gradient(90deg,
-            rgba(147,197,253,0.4) 0 6px,
-            transparent 6px 14px);
-        }
-        .wup-hero-v2__matrix-cells {
-          display: flex; gap: 32px; flex-wrap: wrap;
-        }
-        .wup-hero-v2__matrix-cell { min-width: 0; }
-        .wup-hero-v2__matrix-key {
-          font-size: 9px;
-          color: #93c5fd;
-          letter-spacing: 0.22em;
-        }
-        .wup-hero-v2__matrix-val {
-          font-size: 13px; font-weight: 600; color: #fff;
-          margin-top: 4px;
-        }
-
-
         @media (max-width: 760px) {
           .wup-hero-v2 {
             padding-top: 240px;
@@ -299,8 +246,6 @@ function Hero() {
             width: 100%; justify-content: center;
             padding: 14px 22px; font-size: 14px;
           }
-
-          .wup-hero-v2__matrix { display: none; }
         }
 
         /* Real touch devices only — never fires on a resized desktop browser.
@@ -473,7 +418,7 @@ function Advantages() {
               </p>
             </div>
 
-            <div style={{ position: 'relative', borderLeft: '1px solid rgba(96,165,250,0.15)', overflow: 'hidden', minHeight: 560 }}>
+            <div className="wup-feat-img-area" style={{ position: 'relative', borderLeft: '1px solid rgba(96,165,250,0.15)', overflow: 'hidden', minHeight: 560 }}>
               <div className="wup-dot-grid" style={{ position: 'absolute', inset: 0, opacity: 0.4, zIndex: 1 }} />
               <div style={{ position: 'absolute', inset: 0, zIndex: 2, display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', padding: 32, gap: 16 }} className="wup-machine-grid">
                 <div style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -523,6 +468,28 @@ function Advantages() {
       <style>{`
         @media(max-width:1100px){.wup-feat-grid{grid-template-columns:1fr!important;}}
         @media(max-width:960px){.wup-adv-head{grid-template-columns:1fr!important;}.wup-adv-grid{grid-template-columns:1fr!important;}.wup-adv-grid>*{grid-column:span 1!important;margin-top:0!important;}}
+        /* Narrow widths: take the machine grid out of absolute positioning, give each cell a hard pixel
+           height, and let the parent grow naturally. The previous approach kept the grid absolute and
+           tried to use 1fr 1fr rows, but interaction with cell height:100% + align-items:center produced
+           content-driven cell heights that overflowed the container and got clipped. */
+        @media(max-width:720px){
+          .wup-machine-grid{
+            position:relative!important;
+            inset:auto!important;
+            grid-template-columns:1fr!important;
+            gap:16px!important;
+            padding:28px!important;
+          }
+          .wup-machine-grid > div{
+            height:360px!important;
+            min-height:360px!important;
+          }
+          .wup-feat-img-area{min-height:0!important;}
+        }
+        @media(max-width:480px){
+          .wup-machine-grid{padding:20px!important;gap:12px!important;}
+          .wup-machine-grid > div{height:300px!important;min-height:300px!important;}
+        }
       `}</style>
     </section>
   );
