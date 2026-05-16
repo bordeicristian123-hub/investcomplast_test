@@ -302,6 +302,17 @@ function Hero() {
 
           .wup-hero-v2__matrix { display: none; }
         }
+
+        /* Real touch devices only — never fires on a resized desktop browser.
+           Vertically centers the hero in the device viewport (top space = bottom space). */
+        @media (max-width: 760px) and (hover: none) and (pointer: coarse) {
+          .wup-hero-v2 {
+            padding-top: 140px;
+            padding-bottom: 140px;
+            min-height: 100vh;
+            min-height: 100dvh;
+          }
+        }
       `}</style>
     </header>
   );
