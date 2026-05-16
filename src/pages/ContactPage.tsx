@@ -491,7 +491,22 @@ export default function ContactPage() {
     if (state?.scrollTo) {
       const target = state.scrollTo;
       const timer = setTimeout(() => {
-        document.getElementById(target)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const el = document.getElementById(target);
+        if (el) {
+          // On desktop, stop short of the form's top so the map/book-a-call
+          // column lines up with the message form in the viewport. Mobile
+          // keeps the original block:'start' behavior.
+          const isDesktop =
+            typeof window !== 'undefined' &&
+            window.matchMedia('(min-width: 1024px)').matches;
+          if (isDesktop) {
+            const offset = 160;
+            const top = el.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top, behavior: 'smooth' });
+          } else {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
         window.history.replaceState({}, '');
       }, 100);
       return () => clearTimeout(timer);
