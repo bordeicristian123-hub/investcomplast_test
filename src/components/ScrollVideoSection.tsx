@@ -263,10 +263,15 @@ export default function ScrollVideoSection({ onComplete }: Props) {
   }, [ready]);
 
   if (isTouchDevice) {
+    // Mask is much shallower at the top than desktop: on a 30vh box the
+    // original 0→28% fade swallowed the top of the van. We keep the bottom
+    // fade so the next section still blends in.
+    const mobileMask =
+      'linear-gradient(to bottom, transparent 0%, black 4%, black 78%, rgba(0,0,0,0.5) 92%, transparent 100%)';
     return (
       <section
         ref={sectionRef}
-        className="h-[30vh] md:h-[55vh]"
+        className="h-[34vh] md:h-[55vh]"
         style={{ position: 'relative', width: '100%' }}
       >
         <div
@@ -277,10 +282,8 @@ export default function ScrollVideoSection({ onComplete }: Props) {
             margin: '0 auto',
             position: 'relative',
             overflow: 'hidden',
-            maskImage:
-              'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 12%, black 28%, black 75%, rgba(0,0,0,0.5) 90%, transparent 100%)',
-            WebkitMaskImage:
-              'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 12%, black 28%, black 75%, rgba(0,0,0,0.5) 90%, transparent 100%)',
+            maskImage: mobileMask,
+            WebkitMaskImage: mobileMask,
           }}
         >
           <video
@@ -292,7 +295,7 @@ export default function ScrollVideoSection({ onComplete }: Props) {
             preload="auto"
             disablePictureInPicture
             webkit-playsinline="true"
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[125%] h-auto max-w-none"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[115%] h-auto max-w-none"
           />
         </div>
       </section>
