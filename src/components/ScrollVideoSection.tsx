@@ -51,18 +51,47 @@ export default function ScrollVideoSection({ onComplete }: Props) {
     let dead = false;
 
     const vid = document.createElement('video');
-    vid.src = '/gallery/van_explosion.mp4';
     vid.preload = 'auto';
     vid.muted = true;
     vid.playsInline = true;
+    vid.crossOrigin = 'anonymous';
+    vid.src = '/gallery/van_explosion.mp4';
+    // Explicit load() avoids edge cases where the browser defers fetching
+    // until first interaction with the element.
+    vid.load();
+
+    // Promise helper with timeout + readyState short-circuit. The `seeked`
+    // event is never guaranteed to fire (e.g. seeking to current time is a
+    // no-op in most browsers — this was the hang on i=0). Falling back after
+    // a timeout keeps extraction alive instead of stalling forever.
+    const waitFor = (
+      event: 'loadedmetadata' | 'seeked',
+      timeoutMs: number,
+      readyCheck?: () => boolean,
+    ) =>
+      new Promise<void>((resolve) => {
+        if (readyCheck && readyCheck()) return resolve();
+        let done = false;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          vid.removeEventListener(event, finish);
+          vid.removeEventListener('error', finish);
+          clearTimeout(timer);
+          resolve();
+        };
+        vid.addEventListener(event, finish, { once: true });
+        vid.addEventListener('error', finish, { once: true });
+        const timer = setTimeout(finish, timeoutMs);
+      });
 
     (async () => {
-      await new Promise<void>(res =>
-        vid.addEventListener('loadedmetadata', () => res(), { once: true })
-      );
+      // HAVE_METADATA = 1; skip wait if metadata already loaded (cached video)
+      await waitFor('loadedmetadata', 8000, () => vid.readyState >= 1);
       if (dead) return;
 
       const { duration, videoWidth: vw, videoHeight: vh } = vid;
+      if (!duration || !isFinite(duration)) return;
       const total = Math.max(2, Math.round(duration * EXTRACT_FPS));
 
       // Canvas pixel dimensions = video native resolution
@@ -73,16 +102,25 @@ export default function ScrollVideoSection({ onComplete }: Props) {
 
       for (let i = 0; i < total; i++) {
         if (dead) return;
-        vid.currentTime = (i / (total - 1)) * duration;
-        await new Promise<void>(res =>
-          vid.addEventListener('seeked', () => res(), { once: true })
-        );
-        ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
-        frames.push(await createImageBitmap(canvas));
+        const target = (i / (total - 1)) * duration;
+        // If target equals current currentTime, the browser won't fire
+        // `seeked` — nudge by a tiny epsilon so it always dispatches.
+        const seekTo =
+          Math.abs(vid.currentTime - target) < 1e-4 ? target + 1e-3 : target;
+        vid.currentTime = seekTo;
+        await waitFor('seeked', 2500);
+        if (dead) return;
+        try {
+          ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+          frames.push(await createImageBitmap(canvas));
+        } catch {
+          // drawImage/createImageBitmap can throw if the video frame isn't
+          // decoded yet — skip and continue rather than aborting extraction.
+        }
         if (i % 4 === 0 || i === total - 1) setProgress((i + 1) / total);
       }
 
-      if (dead) return;
+      if (dead || frames.length === 0) return;
       framesRef.current = frames;
       ctx.drawImage(frames[0], 0, 0);
       setReady(true);
