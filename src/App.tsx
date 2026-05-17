@@ -12,6 +12,7 @@ import { TrustBar } from "./components/TrustBar";
 import { Navbar } from "./components/Navbar";
 import ProductShowcase from "./components/ProductShowcase";
 import ScrollVideoSection from "./components/ScrollVideoSection";
+import ScrollStack, { ScrollStackItem } from "./components/ScrollStack";
 
 function useCountUp(target: number, duration = 1500, start = false) {
   const [val, setVal] = useState(0);
@@ -179,9 +180,9 @@ function HomePage() {
                     <span className="text-blue-400">Invest</span>complast:
                   </span>
                   <br />
-                  <span className="gradient-text">Shaping the Future</span>
+                  <span className="gradient-text">Powering Your     ‎  </span>
                   <br />
-                  <span className="gradient-text">of Packaging.</span>
+                  <span className="gradient-text">Production Line.</span>
                 </h1>
               </motion.div>
 
@@ -428,6 +429,41 @@ function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════ */}
+      {/* SCROLL STACK SECTION — machine images       */}
+      {/* ═══════════════════════════════════════════ */}
+      <section id="scroll-stack" className="relative z-10 overflow-visible">
+        <ScrollStack
+          useWindowScroll
+          itemDistance={100}
+          itemScale={0.03}
+          itemStackDistance={24}
+          baseScale={0.85}
+          className="!h-auto !overflow-visible"
+        >
+          {[
+            '/gallery/scrollGrid/photo1.png',
+            '/gallery/scrollGrid/photo2.png',
+            '/gallery/scrollGrid/photo3.jpg',
+            '/gallery/scrollGrid/photo4.jpg',
+            '/gallery/scrollGrid/photo5.jpg',
+            '/gallery/scrollGrid/photo6.jpg',
+          ].map((src, i) => (
+            <ScrollStackItem
+              key={i}
+              itemClassName="!p-0 !h-[clamp(320px,55vh,560px)] overflow-hidden border border-blue-400/15 max-w-5xl mx-auto bg-[#040c1b]"
+            >
+              <img
+                src={src}
+                alt=""
+                className="w-full h-full object-contain block select-none pointer-events-none"
+                draggable={false}
+              />
+            </ScrollStackItem>
+          ))}
+        </ScrollStack>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
       {/* PRODUCT SHOWCASE SECTION                    */}
       {/* ═══════════════════════════════════════════ */}
       <ProductShowcase />
@@ -476,7 +512,7 @@ function HomePage() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1 }}
-            className="liquid-glass-card-blue relative overflow-hidden"
+            className="liquid-glass-card-blue wup-home-stats-card relative overflow-hidden"
             style={{ padding: '60px 50px' }}
           >
             <div className="wup-grid-bg-tight absolute inset-0 pointer-events-none" style={{ opacity: 0.5 }} />
@@ -492,12 +528,12 @@ function HomePage() {
               }}
             />
 
-            <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 wup-home-stats-grid">
+            <div className="relative grid grid-cols-2 lg:grid-cols-4 wup-home-stats-grid">
               {[
-                { v: `${yearsCount}+`,     l: 'Years Experience',      sub: 'industry experience' },
-                { v: `${productsCount}M+`, l: 'Products Made',         sub: 'units shipped' },
-                { v: `${partnersCount}+`,  l: 'Partners',              sub: 'global brands' },
-                { v: `${foodGradeCount}%`, l: 'Food-Grade Materials',  sub: 'certified resin' },
+                { v: `${yearsCount}+`, l: 'Years Experience', sub: 'industry experience' },
+                { v: `${productsCount}M+`, l: 'Products Made', sub: 'units shipped' },
+                { v: `${partnersCount}+`, l: 'Partners', sub: 'global brands' },
+                { v: `${foodGradeCount}%`, l: 'Food-Grade Materials', sub: 'certified resin' },
               ].map((s, i) => (
                 <div
                   key={i}
@@ -527,21 +563,23 @@ function HomePage() {
             </div>
 
             <style>{`
-              @media (max-width: 960px) {
+              .wup-home-stat-cell { text-align: center; }
+              /* Below lg (1024px) the grid is 2 columns — redo the borders. */
+              @media (max-width: 1023px) {
                 .wup-home-stats-grid > * { border-left: none !important; }
-                .wup-home-stats-grid > *:nth-child(n+2) {
+                .wup-home-stats-grid > *:nth-child(2),
+                .wup-home-stats-grid > *:nth-child(4) {
+                  border-left: 1px solid rgba(96,165,250,0.18) !important;
+                }
+                .wup-home-stats-grid > *:nth-child(n+3) {
                   border-top: 1px solid rgba(96,165,250,0.18);
                   padding-top: 28px;
                   margin-top: 4px;
                 }
               }
-              @media (min-width: 768px) and (max-width: 960px) {
-                .wup-home-stats-grid > *:nth-child(2) {
-                  border-top: none;
-                  border-left: 1px solid rgba(96,165,250,0.18) !important;
-                  padding-top: 24px;
-                  margin-top: 0;
-                }
+              @media (max-width: 640px) {
+                .wup-home-stats-card { padding: 32px 16px !important; }
+                .wup-home-stat-cell { padding-left: 10px !important; padding-right: 10px !important; }
               }
             `}</style>
           </motion.div>
