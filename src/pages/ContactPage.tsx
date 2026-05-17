@@ -124,8 +124,29 @@ const INFO_CARDS = [
   { icon: <IPin width={20} height={20} />, label: 'Headquarters', lines: ['Strada Drumul Vilelor 1A', 'Dumbrava, Moldova'], cta: 'Open in Maps', href: 'https://www.google.com/maps/search/?api=1&query=Strada+Drumul+Vilelor+1A,+Dumbrava,+Moldova' },
   { icon: <IPhone width={20} height={20} />, label: 'Sales', lines: ['069 096 174'], cta: 'Call sales', href: 'tel:+37369096174' },
   { icon: <IMail width={20} height={20} />, label: 'Email', lines: ['investcomplast@gmail.com'], cta: 'Compose email', href: 'mailto:investcomplast@gmail.com' },
-  { icon: <IClock width={20} height={20} />, label: 'Hours', lines: ['Mon–Fri · 08:00 – 19:00 EET', 'Sat · 10:00 – 14:00'], cta: 'Book a call', href: '#form' },
+  { icon: <IClock width={20} height={20} />, label: 'Hours', lines: ['Mon–Fri · 08:00 – 19:00 EET', 'Sat · 10:00 – 14:00'], cta: 'Book a call', href: '#pick-a-time-btn' },
 ];
+
+function flashElement(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('icp-pulse-glow');
+  // Force reflow so re-adding the class restarts the animation
+  void el.offsetWidth;
+  el.classList.add('icp-pulse-glow');
+  window.setTimeout(() => el.classList.remove('icp-pulse-glow'), 900);
+}
+
+// Each anchor target → list of element IDs to flash together (section + button).
+const FLASH_TARGETS: Record<string, string[]> = {
+  'form':              ['form', 'send-message-btn'],
+  'pick-a-time-btn':   ['book-call-card', 'pick-a-time-btn'],
+};
+
+function flashFor(targetId: string) {
+  const ids = FLASH_TARGETS[targetId] ?? [targetId];
+  ids.forEach(flashElement);
+}
 
 function InfoCards() {
   return (
@@ -153,6 +174,17 @@ function InfoCards() {
             href={c.href}
             target={c.href.startsWith('http') ? '_blank' : undefined}
             rel={c.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+            onClick={(e) => {
+              if (c.href.startsWith('#')) {
+                e.preventDefault();
+                const id = c.href.slice(1);
+                const el = document.getElementById(id);
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  window.setTimeout(() => flashFor(id), 700);
+                }
+              }
+            }}
             style={{
               marginTop: 22, background: 'transparent', border: 0, color: '#60a5fa',
               padding: 0, fontSize: 13, fontWeight: 600, cursor: 'pointer',
@@ -258,7 +290,7 @@ function ContactForm({ layout = 'stacked' }: { layout?: string }) {
   const twoCol = layout === 'two-col';
 
   return (
-    <form id="form" onSubmit={submit} className="liquid-glass-card-blue icp-fade-up" style={{ padding: '40px 36px', borderRadius: 28 }}>
+    <form id="form" onSubmit={submit} className="liquid-glass-card-blue wup-shine icp-fade-up" style={{ padding: '40px 36px', borderRadius: 28 }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap', marginBottom: 28 }}>
         <div>
           <span className="icp-eyebrow">Send us a message</span>
@@ -365,7 +397,7 @@ function ContactForm({ layout = 'stacked' }: { layout?: string }) {
       )}
 
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}>
-        <button type="submit" disabled={state === 'submitting'} className="icp-btn-primary">
+        <button id="send-message-btn" type="submit" disabled={state === 'submitting'} className="icp-btn-primary">
           {state === 'submitting' ? (
             <><ILoader className="icp-spin" width={16} height={16} /> Sending…</>
           ) : (
@@ -456,10 +488,12 @@ function OfficeMap() {
       </div>
 
       {/* Label card */}
-      <div className="icp-lg-card" style={{ position: 'absolute', left: 24, bottom: 24, padding: '16px 20px', borderRadius: 16, maxWidth: 300 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#93c5fd', marginBottom: 6 }}>Headquarters</div>
-        <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Dumbrava HQ &amp; Factory</div>
-        <div style={{ fontSize: 13, color: 'rgba(191,219,254,0.55)' }}>Strada Drumul Vilelor 1A · Moldova</div>
+      <div className="icp-lg-card icp-map-label" style={{ position: 'absolute', left: 24, bottom: 24, padding: '16px 20px', borderRadius: 16, maxWidth: 300 }}>
+        <div className="icp-map-label__eyebrow" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#93c5fd', marginBottom: 6 }}>Headquarters</div>
+        <div className="icp-map-label__title" style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Dumbrava HQ &amp; Factory</div>
+        <div className="icp-map-label__addr" style={{ fontSize: 13, color: 'rgba(191,219,254,0.55)' }}>
+          Strada Drumul Vilelor 1A · Moldova<span className="icp-map-label__hq"> · Headquarters</span>
+        </div>
       </div>
 
       <div style={{ position: 'absolute', top: 20, right: 20, display: 'flex', gap: 8 }}>
@@ -499,13 +533,12 @@ export default function ContactPage() {
           const isDesktop =
             typeof window !== 'undefined' &&
             window.matchMedia('(min-width: 1024px)').matches;
-          if (isDesktop) {
-            const offset = 160;
-            const top = el.getBoundingClientRect().top + window.scrollY - offset;
-            window.scrollTo({ top, behavior: 'smooth' });
-          } else {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          const offset = isDesktop ? 160 : 96;
+          const top = el.getBoundingClientRect().top + window.scrollY - offset;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+        if (target === 'form') {
+          window.setTimeout(() => flashFor('form'), 900);
         }
         window.history.replaceState({}, '');
       }, 100);
@@ -538,7 +571,7 @@ export default function ContactPage() {
             <ContactForm layout="two-col" />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24, position: 'sticky', top: 110 }}>
               <OfficeMap />
-              <div className="liquid-glass-card-blue" style={{ padding: 28, borderRadius: 24 }}>
+              <div id="book-call-card" className="liquid-glass-card-blue wup-shine" style={{ padding: 28, borderRadius: 24 }}>
                 <span className="icp-eyebrow">Prefer a conversation?</span>
                 <h3 style={{ fontSize: 24, fontWeight: 700, fontStyle: 'italic', letterSpacing: '-0.015em', margin: '10px 0 12px' }}>
                   Book a 30-min discovery call.
@@ -546,7 +579,7 @@ export default function ContactPage() {
                 <p style={{ fontSize: 14, color: 'rgba(191,219,254,0.55)', lineHeight: 1.6, marginBottom: 20 }}>
                   Walk our engineers through your project — no slides, just questions and answers. Free, no commitment.
                 </p>
-                <button className="icp-btn-primary" style={{ padding: '12px 22px', fontSize: 14 }}>
+                <button id="pick-a-time-btn" className="icp-btn-primary" style={{ padding: '12px 22px', fontSize: 14 }}>
                   Pick a time <IArrow width={14} height={14} />
                 </button>
               </div>

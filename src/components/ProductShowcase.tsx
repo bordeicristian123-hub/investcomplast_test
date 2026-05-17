@@ -18,10 +18,8 @@ export default function ProductShowcase() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold leading-tight">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-100 to-blue-400">
-                Our Products
-              </span>
+            <h2 className="wup-h-section text-white">
+              Our <span className="gradient-text">Products</span>
             </h2>
             <p className="text-blue-200/50 max-w-md text-lg mt-3">
               Premium PET bottles engineered for clarity, durability, and sustainability.

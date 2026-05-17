@@ -9,11 +9,27 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import { Palette, Cog, ShieldCheck, Lightbulb } from "lucide-react";
 import { Footer } from "./components/Footer";
 import { TrustBar } from "./components/TrustBar";
-import { HlsVideo } from "./components/HlsVideo";
 import { Navbar } from "./components/Navbar";
-import AnimatedCounter from "./components/AnimatedCounter";
 import ProductShowcase from "./components/ProductShowcase";
 import ScrollVideoSection from "./components/ScrollVideoSection";
+
+function useCountUp(target: number, duration = 1500, start = false) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (!start) return;
+    let raf: number;
+    const t0 = performance.now();
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - t0) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(Math.round(target * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [start, target, duration]);
+  return val;
+}
 
 const ProductPage = lazy(() => import("./pages/ProductPage"));
 const ProductsPage = lazy(() => import("./pages/ProductsPage"));
@@ -22,21 +38,22 @@ const WhyUsPage = lazy(() => import("./pages/WhyUsPage"));
 
 function HomePage() {
   const location = useLocation();
-  const [videoComplete, setVideoComplete] = useState(false);
+  const [whyUsVisible, setWhyUsVisible] = useState(false);
 
   const { scrollY } = useScroll();
   const bottleParallaxY = useTransform(scrollY, (y) => -Math.min(y * 0.25, 200) * 0.3);
 
-  // Activate counters whenever #why-us enters the viewport — covers all cases:
-  //  1. Reload / direct link with why-us already visible
-  //  2. User scrolls past the video section before it finishes loading
-  //  3. Normal flow where onComplete fires after the scroll animation
+  const yearsCount = useCountUp(15, 1500, whyUsVisible);
+  const productsCount = useCountUp(50, 1500, whyUsVisible);
+  const partnersCount = useCountUp(15, 1500, whyUsVisible);
+  const foodGradeCount = useCountUp(100, 1500, whyUsVisible);
+
   useEffect(() => {
     const el = document.getElementById('why-us');
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVideoComplete(true); },
-      { threshold: 0.1 }
+      ([entry]) => { if (entry.isIntersecting) setWhyUsVisible(true); },
+      { threshold: 0.25 }
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -151,20 +168,20 @@ function HomePage() {
                 transition={{ duration: 0.75, delay: 0.1, ease: "easeOut" }}
               >
                 <h1
-                  className="text-[44px] sm:text-5xl md:text-[3.4rem] lg:text-[4rem] font-bold leading-[1.02] tracking-tight text-white text-center md:text-left"
-                  style={{ fontFamily: "'Figtree', system-ui, -apple-system, sans-serif" }}
+                  className="wup-h-hero text-center md:text-left"
+                  style={{
+                    fontSize: 'clamp(40px, 5vw, 80px)',
+                    lineHeight: 1.02,
+                    fontFamily: "'Figtree', system-ui, -apple-system, sans-serif",
+                  }}
                 >
-                  <span className="font-black tracking-tighter text-white/90">
+                  <span style={{ fontStyle: 'normal' }}>
                     <span className="text-blue-400">Invest</span>complast:
                   </span>
                   <br />
-                  <span className="gradient-text font-black leading-[1.02] tracking-tight">
-                    Shaping the Future
-                  </span>
+                  <span className="gradient-text">Shaping the Future</span>
                   <br />
-                  <span className="gradient-text font-black leading-[1.02] tracking-tight">
-                    of Packaging.
-                  </span>
+                  <span className="gradient-text">of Packaging.</span>
                 </h1>
               </motion.div>
 
@@ -206,7 +223,7 @@ function HomePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.0 + i * 0.08 }}
-                  className="liquid-glass-blue rounded-[14px] p-3 tilt"
+                  className="liquid-glass-blue rounded-[14px] p-3 tilt wup-shine"
                 >
                   <div className="flex items-start justify-between mb-2">
                     <span className="mono text-[9px] text-blue-300/40">/{w.mono}</span>
@@ -307,7 +324,7 @@ function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 1.0 + i * 0.08 }}
-                className="liquid-glass-blue rounded-[22px] p-5 tilt"
+                className="liquid-glass-blue rounded-[22px] p-5 tilt wup-shine"
               >
                 <div className="flex items-start justify-between mb-3">
                   <span className="mono text-[10px] text-blue-300/40">/{w.mono}</span>
@@ -357,8 +374,8 @@ function HomePage() {
 
           {/* Heading */}
           <div className="text-center mb-16">
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold italic tracking-tight text-white mb-5">
-              Quality is everything.
+            <h2 className="wup-h-section text-white" style={{ marginBottom: '1.25rem' }}>
+              Quality is <span className="gradient-text">everything.</span>
             </h2>
             <p className="text-blue-200/45 max-w-xl mx-auto text-lg leading-relaxed">
               Innovative packaging solutions engineered for performance, sustainability, and precision.
@@ -391,7 +408,7 @@ function HomePage() {
             ].map(({ title, desc, Icon }, i) => (
               <div
                 key={i}
-                className="liquid-glass-card-blue group p-7 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_0_50px_rgba(59,130,246,0.14)]"
+                className="liquid-glass-card-blue wup-shine group p-7 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_0_50px_rgba(59,130,246,0.14)]"
               >
                 {/* Icon container */}
                 <div className="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6 group-hover:bg-blue-500/15 group-hover:border-blue-400/30 transition-all duration-500">
@@ -418,7 +435,7 @@ function HomePage() {
       {/* ═══════════════════════════════════════════ */}
       {/* SCROLL-DRIVEN VIDEO SECTION                 */}
       {/* ═══════════════════════════════════════════ */}
-      <ScrollVideoSection onComplete={() => setVideoComplete(true)} />
+      <ScrollVideoSection />
 
       {/* ═══════════════════════════════════════════ */}
       {/* WHY US / STATS SECTION                      */}
@@ -445,75 +462,88 @@ function HomePage() {
             transition={{ delay: 0.1 }}
             className="text-center mb-16"
           >
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold italic tracking-tight text-white mb-5">
-              The difference is everything.
+            <h2 className="wup-h-section text-white" style={{ marginBottom: '1.25rem' }}>
+              The difference is <span className="gradient-text">everything.</span>
             </h2>
             <p className="text-blue-200/45 max-w-xl mx-auto text-lg leading-relaxed">
               Years of expertise, cutting-edge technology, and a commitment to excellence.
             </p>
           </motion.div>
 
-          {/* Stats card — structure mirrors Flower web Stats.tsx exactly */}
+          {/* Stats card */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1 }}
             className="liquid-glass-card-blue relative overflow-hidden"
+            style={{ padding: '60px 50px' }}
           >
-            {/* Same HLS stream as Flower web, desaturated + blue overlay */}
-            <HlsVideo
-              src="https://stream.mux.com/NcU3HlHeF7CUL86azTTzpy3Tlb00d6iF3BmCdFslMJYM.m3u8"
-              className="absolute inset-0 w-full h-full object-cover z-0"
-              desaturated
-            />
-            {/* Blue colour tint over the grayscale video */}
-            <div className="absolute inset-0 z-[1] bg-blue-600/20 mix-blend-color pointer-events-none" />
-
-            {/* Radial vignette — replaces the linear top/bottom fades */}
+            <div className="wup-grid-bg-tight absolute inset-0 pointer-events-none" style={{ opacity: 0.5 }} />
             <div
-              className="absolute inset-0 z-[2] pointer-events-none"
-              style={{ background: 'radial-gradient(ellipse at center, transparent 35%, #040c1b 90%)' }}
+              className="absolute pointer-events-none"
+              style={{
+                top: '-30%',
+                right: '-10%',
+                width: 500,
+                height: 500,
+                background: 'radial-gradient(circle, rgba(59,130,246,0.3), transparent 60%)',
+                filter: 'blur(60px)',
+              }}
             />
 
-            {/* Stat grid */}
-            <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-12 text-center py-12 px-14 md:py-16 md:px-20">
+            <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 wup-home-stats-grid">
               {[
-                { label: "Years Experience", numValue: 15, suffix: "+" },
-                { label: "Products Made", numValue: 50, suffix: "M+" },
-                { label: "Partners", numValue: 15, suffix: "+" },
-                { label: "Food-Grade Materials", numValue: 100, suffix: "%" },
-              ].map((stat, i) => (
-                <motion.div
+                { v: `${yearsCount}+`,     l: 'Years Experience',      sub: 'industry experience' },
+                { v: `${productsCount}M+`, l: 'Products Made',         sub: 'units shipped' },
+                { v: `${partnersCount}+`,  l: 'Partners',              sub: 'global brands' },
+                { v: `${foodGradeCount}%`, l: 'Food-Grade Materials',  sub: 'certified resin' },
+              ].map((s, i) => (
+                <div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.1 }}
-                  className="flex flex-col gap-2"
+                  className="px-6 py-6 lg:px-8 wup-home-stat-cell"
+                  style={{ borderLeft: i === 0 ? 'none' : '1px solid rgba(96,165,250,0.18)' }}
                 >
-                  <div className="flex items-center justify-center gap-0.5">
-                    <AnimatedCounter
-                      value={stat.numValue}
-                      fontSize={56}
-                      padding={0}
-                      gap={2}
-                      textColor="white"
-                      fontWeight={700}
-                      gradientFrom="transparent"
-                      gradientTo="transparent"
-                      active={videoComplete}
-                    />
-                    <span style={{ fontSize: 56, fontWeight: 700, fontStyle: 'italic', lineHeight: 1 }}>
-                      {stat.suffix}
-                    </span>
+                  <div
+                    className="wup-h-display gradient-text"
+                    style={{ fontSize: 'clamp(44px, 5vw, 72px)', fontStyle: 'italic', lineHeight: 0.95 }}
+                  >
+                    {s.v}
                   </div>
-                  <span className="text-white/60 font-light text-sm uppercase tracking-wider">
-                    {stat.label}
-                  </span>
-                </motion.div>
+                  <div className="mt-4 text-sm font-semibold text-white">{s.l}</div>
+                  <div
+                    className="mono mt-1"
+                    style={{
+                      fontSize: 11,
+                      color: 'rgba(147,197,253,0.55)',
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {s.sub}
+                  </div>
+                </div>
               ))}
             </div>
+
+            <style>{`
+              @media (max-width: 960px) {
+                .wup-home-stats-grid > * { border-left: none !important; }
+                .wup-home-stats-grid > *:nth-child(n+2) {
+                  border-top: 1px solid rgba(96,165,250,0.18);
+                  padding-top: 28px;
+                  margin-top: 4px;
+                }
+              }
+              @media (min-width: 768px) and (max-width: 960px) {
+                .wup-home-stats-grid > *:nth-child(2) {
+                  border-top: none;
+                  border-left: 1px solid rgba(96,165,250,0.18) !important;
+                  padding-top: 24px;
+                  margin-top: 0;
+                }
+              }
+            `}</style>
           </motion.div>
         </div>
       </section>
@@ -528,8 +558,8 @@ function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold italic tracking-tight text-white mb-5">
-              Ready to Innovate?
+            <h2 className="wup-h-section text-white" style={{ marginBottom: '1.25rem' }}>
+              Ready to <span className="gradient-text">Innovate?</span>
             </h2>
             <p className="text-blue-200/50 text-lg mb-10 max-w-2xl mx-auto">
               Partner with us for cutting-edge packaging solutions that set your brand apart.

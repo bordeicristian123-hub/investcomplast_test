@@ -87,6 +87,28 @@ function Hero() {
         <div className="wup-hero-v2__scanline" />
       </div>
 
+      {/* Floating particles */}
+      <div className="wup-hero-v2__particles" aria-hidden="true">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <span key={i} className={`wup-hero-v2__particle wup-hero-v2__particle--${i}`} />
+        ))}
+      </div>
+
+      {/* Telemetry pulse markers over the backdrop */}
+      <div className="wup-hero-v2__telemetry" aria-hidden="true">
+        {[
+          { top: '28%', right: '22%', delay: '0s' },
+          { top: '52%', right: '14%', delay: '0.9s' },
+          { top: '70%', right: '32%', delay: '1.7s' },
+        ].map((t, i) => (
+          <div key={i} className="wup-hero-v2__tdot" style={{ top: t.top, right: t.right }}>
+            <span className="wup-hero-v2__tring" style={{ animationDelay: t.delay }} />
+            <span className="wup-hero-v2__tring wup-hero-v2__tring--2" style={{ animationDelay: t.delay }} />
+            <span className="wup-hero-v2__tcore" />
+          </div>
+        ))}
+      </div>
+
       {/* Copy block */}
       <div className="icp-container wup-hero-v2__inner">
         <div className="wup-hero-v2__copy icp-fade-up icp-d2">
@@ -118,9 +140,26 @@ function Hero() {
             >
               Get in touch
             </button>
+            <Link to="/products" className="icp-btn-ghost" style={{ textDecoration: 'none' }}>
+              Browse products
+            </Link>
           </div>
         </div>
       </div>
+
+      {/* Scroll indicator */}
+      <div className="wup-hero-v2__scroll" aria-hidden="true">
+        <span className="mono">SCROLL</span>
+        <div className="wup-hero-v2__scroll-track">
+          <span className="wup-hero-v2__scroll-drop" />
+        </div>
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none" className="wup-hero-v2__scroll-chev">
+          <path d="M1 1 L7 7 L13 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+
+      {/* Bottom data-stream line */}
+      <div className="wup-hero-v2__stream" aria-hidden="true"><span /></div>
 
       <style>{`
         .wup-hero-v2 {
@@ -241,10 +280,13 @@ function Hero() {
 
           .wup-hero-v2__title  { margin-top: 24px; font-size: clamp(36px, 11vw, 56px) !important; line-height: 1.05; }
           .wup-hero-v2__lede   { margin-top: 20px; font-size: 14px; }
-          .wup-hero-v2__cta    { margin-top: 24px; }
-          .wup-hero-v2__cta .icp-btn-primary {
-            width: 100%; justify-content: center;
-            padding: 14px 22px; font-size: 14px;
+          .wup-hero-v2__cta    { margin-top: 24px; flex-wrap: nowrap; gap: 10px; }
+          .wup-hero-v2__cta .icp-btn-primary,
+          .wup-hero-v2__cta .icp-btn-ghost {
+            flex: 1 1 0; min-width: 0;
+            justify-content: center;
+            padding: 14px 16px; font-size: 13px;
+            white-space: nowrap;
           }
         }
 
@@ -257,6 +299,142 @@ function Hero() {
             min-height: 100vh;
             min-height: 100dvh;
           }
+        }
+
+        /* ── Floating particles ── */
+        .wup-hero-v2__particles {
+          position: absolute; inset: 0; z-index: 2;
+          pointer-events: none; overflow: hidden;
+        }
+        .wup-hero-v2__particle {
+          position: absolute;
+          width: 4px; height: 4px; border-radius: 50%;
+          background: rgba(147,197,253,0.55);
+          box-shadow: 0 0 10px rgba(147,197,253,0.6);
+          animation: wupHeroFloat 9s ease-in-out infinite;
+        }
+        .wup-hero-v2__particle--0 { top: 16%; left: 12%; animation-delay: 0s; }
+        .wup-hero-v2__particle--1 { top: 30%; left: 22%; width: 3px; height: 3px; animation-delay: 1.1s; }
+        .wup-hero-v2__particle--2 { top: 60%; left: 8%; animation-delay: 2.4s; }
+        .wup-hero-v2__particle--3 { top: 78%; left: 24%; width: 5px; height: 5px; animation-delay: 0.6s; }
+        .wup-hero-v2__particle--4 { top: 22%; left: 48%; width: 3px; height: 3px; animation-delay: 1.7s; }
+        .wup-hero-v2__particle--5 { top: 50%; left: 42%; animation-delay: 3s; }
+        .wup-hero-v2__particle--6 { top: 12%; left: 64%; width: 5px; height: 5px; animation-delay: 0.3s; }
+        .wup-hero-v2__particle--7 { top: 38%; right: 12%; width: 3px; height: 3px; animation-delay: 2s; }
+        .wup-hero-v2__particle--8 { top: 68%; right: 22%; animation-delay: 1.3s; }
+        .wup-hero-v2__particle--9 { top: 82%; right: 38%; width: 3px; height: 3px; animation-delay: 2.7s; }
+        @keyframes wupHeroFloat {
+          0%, 100% { transform: translate(0,0); opacity: 0.25; }
+          50%      { transform: translate(12px,-22px); opacity: 0.85; }
+        }
+
+        /* ── Telemetry pulse markers ── */
+        .wup-hero-v2__telemetry {
+          position: absolute; inset: 0; z-index: 3;
+          pointer-events: none;
+        }
+        .wup-hero-v2__tdot {
+          position: absolute; width: 12px; height: 12px;
+        }
+        .wup-hero-v2__tcore {
+          position: absolute; inset: 4px; border-radius: 50%;
+          background: #67e8f9;
+          box-shadow: 0 0 14px rgba(103,232,249,0.85);
+        }
+        .wup-hero-v2__tring {
+          position: absolute; inset: 0; border-radius: 50%;
+          border: 1px solid rgba(103,232,249,0.55);
+          animation: wupHeroPulse 2.6s ease-out infinite;
+        }
+        .wup-hero-v2__tring--2 { animation-delay: 1.3s; }
+        @keyframes wupHeroPulse {
+          0%   { transform: scale(0.6); opacity: 1; }
+          100% { transform: scale(2.6); opacity: 0; }
+        }
+
+        /* ── Bottom data-stream line ── */
+        .wup-hero-v2__stream {
+          position: absolute; left: 0; right: 0; bottom: 0;
+          height: 1px; z-index: 4;
+          background: linear-gradient(90deg, transparent, rgba(96,165,250,0.18), transparent);
+          overflow: hidden;
+        }
+        .wup-hero-v2__stream span {
+          position: absolute; top: 0; left: -30%;
+          width: 30%; height: 100%;
+          background: linear-gradient(90deg, transparent, #67e8f9, transparent);
+          animation: wupHeroStream 4.5s linear infinite;
+        }
+        @keyframes wupHeroStream {
+          0%   { left: -30%; }
+          100% { left: 130%; }
+        }
+
+        /* ── Scroll indicator ── */
+        .wup-hero-v2__scroll {
+          position: absolute;
+          bottom: 36px;
+          left: 50%;
+          z-index: 5;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 14px;
+          color: rgba(191,219,254,0.6);
+          pointer-events: none;
+          transform: translateX(-50%);
+          animation: wupHeroScrollBob 2.8s ease-in-out infinite;
+        }
+        .wup-hero-v2__scroll .mono {
+          font-size: 12px;
+          letter-spacing: 0.4em;
+          font-weight: 600;
+          text-transform: uppercase;
+          color: rgba(191,219,254,0.65);
+          text-shadow: 0 0 12px rgba(103,232,249,0.25);
+        }
+        .wup-hero-v2__scroll-track {
+          position: relative;
+          width: 2px;
+          height: 80px;
+          background: linear-gradient(to bottom, rgba(96,165,250,0.6), rgba(96,165,250,0));
+          border-radius: 9999px;
+          overflow: hidden;
+        }
+        .wup-hero-v2__scroll-drop {
+          position: absolute;
+          top: -16px;
+          left: -1px;
+          width: 4px;
+          height: 18px;
+          border-radius: 9999px;
+          background: linear-gradient(to bottom, transparent, #67e8f9 50%, transparent);
+          filter: drop-shadow(0 0 8px rgba(103,232,249,0.85));
+          animation: wupHeroScrollDrop 2s cubic-bezier(.6,.05,.4,.95) infinite;
+        }
+        .wup-hero-v2__scroll-chev {
+          color: rgba(103,232,249,0.7);
+          animation: wupHeroScrollChev 1.6s ease-in-out infinite;
+        }
+        @keyframes wupHeroScrollDrop {
+          0%   { transform: translateY(0);   opacity: 0; }
+          15%  { opacity: 1; }
+          85%  { opacity: 1; }
+          100% { transform: translateY(100px); opacity: 0; }
+        }
+        @keyframes wupHeroScrollBob {
+          0%, 100% { transform: translate(-50%, 0); }
+          50%      { transform: translate(-50%, 6px); }
+        }
+        @keyframes wupHeroScrollChev {
+          0%, 100% { transform: translateY(0); opacity: 0.4; }
+          50%      { transform: translateY(4px); opacity: 1; }
+        }
+
+        @media (max-width: 760px) {
+          .wup-hero-v2__particles { opacity: 0.55; }
+          .wup-hero-v2__tdot { width: 9px; height: 9px; }
+          .wup-hero-v2__scroll { display: none; }
         }
       `}</style>
     </header>
@@ -584,11 +762,19 @@ function Process() {
             {STEPS.map((step, i) => {
               const isActive = i === active;
               const isPast = i < active;
+              const activeBg = 'radial-gradient(120% 200% at 50% 0%, rgba(255,255,255,0.35), rgba(255,255,255,0) 45%), linear-gradient(135deg, #67e8f9 0%, #3b82f6 35%, #1d4ed8 75%, #0c2461 100%)';
+              const pastBg = 'radial-gradient(120% 200% at 50% 0%, rgba(255,255,255,0.18), rgba(255,255,255,0) 45%), linear-gradient(135deg, rgba(103,232,249,0.45) 0%, rgba(59,130,246,0.55) 35%, rgba(29,78,216,0.55) 75%, rgba(12,36,97,0.7) 100%)';
+              const stepBg = isActive ? activeBg : isPast ? pastBg : 'rgba(4,12,27,0.7)';
+              const stepShadow = isActive
+                ? 'inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(0,0,0,0.25), 0 8px 22px rgba(59,130,246,0.45), 0 18px 60px rgba(103,232,249,0.28)'
+                : isPast
+                ? 'inset 0 1px 0 rgba(255,255,255,0.25), 0 4px 14px rgba(59,130,246,0.18)'
+                : 'none';
               return (
                 <button key={i} onClick={() => setActive(i)} className="wup-step-btn" style={{ background: 'transparent', border: 0, cursor: 'pointer', padding: 0, textAlign: 'left', color: 'inherit', minWidth: 0 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
                     <div className="mono wup-step-num" style={{ fontSize: 11, color: isActive ? '#67e8f9' : 'rgba(147,197,253,0.45)', letterSpacing: '0.2em', transition: 'color .3s' }}>{step.n}</div>
-                    <div className="wup-step-circle" style={{ width: 56, height: 56, borderRadius: '50%', background: isActive ? 'linear-gradient(180deg, #3b82f6, #1d4ed8)' : (isPast ? 'rgba(59,130,246,0.15)' : 'rgba(4,12,27,0.7)'), border: `1px solid ${isActive ? 'rgba(147,197,253,0.6)' : 'rgba(96,165,250,0.25)'}`, boxShadow: isActive ? '0 0 30px rgba(59,130,246,0.5)' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isActive ? '#fff' : (isPast ? '#67e8f9' : 'rgba(147,197,253,0.6)'), transition: 'all .35s' }}>
+                    <div className="wup-step-circle" style={{ width: 56, height: 56, borderRadius: '50%', background: stepBg, border: isActive || isPast ? 'none' : '1px solid rgba(96,165,250,0.25)', boxShadow: stepShadow, display: 'flex', alignItems: 'center', justifyContent: 'center', color: isActive || isPast ? '#fff' : 'rgba(147,197,253,0.6)', textShadow: isActive || isPast ? '0 1px 1px rgba(0,0,0,0.25)' : 'none', transition: 'all .35s' }}>
                       {step.icon}
                     </div>
                     <div className="wup-step-label" style={{ textAlign: 'center', maxWidth: 160, marginTop: 14 }}>
