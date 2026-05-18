@@ -186,7 +186,13 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       }
 
       const newTransform = {
-        translateY: Math.round(translateY * 100) / 100,
+        // Round to integer px in window-scroll mode. Mobile touch scroll
+        // produces fractional scrollY values; passing those through to
+        // translate3d makes the compositor snap-then-smear sub-pixel positions
+        // inconsistently every frame, visible as micro-shiver.
+        translateY: useWindowScroll
+          ? Math.round(translateY)
+          : Math.round(translateY * 100) / 100,
         scale: Math.round(scale * 1000) / 1000,
         rotation: Math.round(rotation * 100) / 100,
         blur: Math.round(blur * 100) / 100
@@ -386,19 +392,26 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     recomputeLayout
   ]);
 
-  return (
-    <div
-      className={`relative w-full h-full overflow-y-auto overflow-x-visible ${className}`.trim()}
-      ref={scrollerRef}
-      style={{
+  // In window-scroll mode the outer div is just a passthrough — it doesn't
+  // scroll itself, so promoting it to a compositor layer (translateZ, willChange)
+  // only creates an extra stacking context that the cards are composited
+  // inside, fighting mobile compositors. Drop those styles in that mode.
+  const outerStyle: React.CSSProperties = useWindowScroll
+    ? {}
+    : {
         overscrollBehavior: 'contain',
         WebkitOverflowScrolling: 'touch',
         scrollBehavior: 'smooth',
         WebkitTransform: 'translateZ(0)',
         transform: 'translateZ(0)',
         willChange: 'scroll-position'
-      }}
-    >
+      };
+  const outerClass = useWindowScroll
+    ? `relative w-full ${className}`.trim()
+    : `relative w-full h-full overflow-y-auto overflow-x-visible ${className}`.trim();
+
+  return (
+    <div className={outerClass} ref={scrollerRef} style={outerStyle}>
       <div className="scroll-stack-inner pt-[6vh] px-20 pb-[20rem]">
         {children}
         {/* Spacer so the last pin can release cleanly */}
