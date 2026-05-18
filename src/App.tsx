@@ -429,20 +429,10 @@ function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* SCROLL STACK SECTION — machine images       */}
-      {/* Desktop: animated stack. Mobile: static     */}
-      {/* gallery — JS-pinned scroll fights the       */}
-      {/* compositor on mobile and shivers.           */}
+      {/* SCROLL STACK SECTION                        */}
       {/* ═══════════════════════════════════════════ */}
-      <section id="scroll-stack" className="relative z-10 overflow-visible hidden md:block">
-        <ScrollStack
-          useWindowScroll
-          itemDistance={100}
-          itemScale={0.03}
-          itemStackDistance={24}
-          baseScale={0.85}
-          className="!h-auto !overflow-visible"
-        >
+      <section id="scroll-stack" className="relative z-10 overflow-visible">
+        <ScrollStack useWindowScroll className="!h-auto !overflow-visible">
           {[
             '/gallery/scrollGrid/photo1.png',
             '/gallery/scrollGrid/photo2.png',
@@ -464,31 +454,6 @@ function HomePage() {
             </ScrollStackItem>
           ))}
         </ScrollStack>
-      </section>
-
-      {/* Mobile fallback — simple static gallery */}
-      <section className="md:hidden relative z-10 px-4 py-12 flex flex-col gap-4">
-        {[
-          '/gallery/scrollGrid/photo1.png',
-          '/gallery/scrollGrid/photo2.png',
-          '/gallery/scrollGrid/photo3.jpg',
-          '/gallery/scrollGrid/photo4.jpg',
-          '/gallery/scrollGrid/photo5.jpg',
-          '/gallery/scrollGrid/photo6.jpg',
-        ].map((src, i) => (
-          <motion.img
-            key={i}
-            src={src}
-            alt=""
-            loading="lazy"
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-            className="w-full h-[clamp(220px,42vh,360px)] object-contain rounded-[24px] border border-blue-400/15 bg-[#040c1b] select-none pointer-events-none"
-            draggable={false}
-          />
-        ))}
       </section>
 
       {/* ═══════════════════════════════════════════ */}
