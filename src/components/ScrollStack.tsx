@@ -186,13 +186,14 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       }
 
       const newTransform = {
-        // Round to integer px in window-scroll mode. Mobile touch scroll
-        // produces fractional scrollY values; passing those through to
-        // translate3d makes the compositor snap-then-smear sub-pixel positions
-        // inconsistently every frame, visible as micro-shiver.
-        translateY: useWindowScroll
-          ? Math.round(translateY)
-          : Math.round(translateY * 100) / 100,
+        // Do NOT integer-round translateY: pinned cards have
+        // translateY = scrollTop + const, so the card's visible position
+        // (cardTop + translateY − scrollTop) is mathematically constant only
+        // if translateY tracks scrollTop's full precision. Mobile touch
+        // scrollY is fractional; integer-rounding here makes pinned cards
+        // snap ±1px every time the rounded value flips, which IS the shiver.
+        // 0.01px precision is invisible and keeps the cancellation exact.
+        translateY: Math.round(translateY * 100) / 100,
         scale: Math.round(scale * 1000) / 1000,
         rotation: Math.round(rotation * 100) / 100,
         blur: Math.round(blur * 100) / 100
