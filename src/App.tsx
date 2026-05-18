@@ -458,7 +458,13 @@ function HomePage() {
       {/* ═══════════════════════════════════════════ */}
       {/* PRODUCT SHOWCASE SECTION                    */}
       {/* ═══════════════════════════════════════════ */}
-      <ProductShowcase />
+      {/* Negative margin absorbs most of ScrollStack's pb runway —
+          that padding gives the last card meaningful stick + bottom-track
+          range; this -mt pulls Products back up so the visible gap stays
+          small. Net visible gap ≈ pb − |mt|. */}
+      <div className="-mt-[14rem] relative z-10">
+        <ProductShowcase />
+      </div>
 
       {/* ═══════════════════════════════════════════ */}
       {/* SCROLL-DRIVEN VIDEO SECTION                 */}
