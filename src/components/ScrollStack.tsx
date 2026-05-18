@@ -58,6 +58,14 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   const cardsRef = useRef<HTMLElement[]>([]);
   const lastTransformsRef = useRef(new Map<number, any>());
   const isUpdatingRef = useRef(false);
+  // Cached layout values. Recomputed only on real layout events (resize >
+  // threshold, orientationchange, load, late mount) — NOT on every scroll
+  // frame. Critical on mobile: window.innerHeight changes constantly as the
+  // address bar slides; reading it live makes stackPositionPx / pinEnd wobble
+  // every frame and is the main source of mobile shiver.
+  const cardOffsetsRef = useRef<number[]>([]);
+  const endOffsetRef = useRef(0);
+  const viewportHeightRef = useRef(0);
 
   const calculateProgress = useCallback((scrollTop: number, start: number, end: number) => {
     if (scrollTop < start) return 0;
@@ -74,9 +82,12 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
   const getScrollData = useCallback(() => {
     if (useWindowScroll) {
+      // Use the *cached* viewport height (set on mount/resize, not on scroll).
+      // window.innerHeight changes with mobile address bar slide; using it here
+      // would re-jitter the whole calculation every scroll frame.
       return {
         scrollTop: window.scrollY,
-        containerHeight: window.innerHeight,
+        containerHeight: viewportHeightRef.current || document.documentElement.clientHeight,
         scrollContainer: document.documentElement
       };
     } else {
@@ -89,7 +100,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     }
   }, [useWindowScroll]);
 
-  const getElementOffset = useCallback(
+  const measureOffsetFromDOM = useCallback(
     (element: HTMLElement) => {
       if (useWindowScroll) {
         // Walk offsetParent chain — document-relative position, immune to the
@@ -109,6 +120,19 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     [useWindowScroll]
   );
 
+  const recomputeLayout = useCallback(() => {
+    if (useWindowScroll) {
+      // clientHeight = layout viewport, stable across mobile address-bar
+      // collapse. innerHeight is the visual viewport and would change here.
+      viewportHeightRef.current = document.documentElement.clientHeight;
+    }
+    cardOffsetsRef.current = cardsRef.current.map(card => measureOffsetFromDOM(card));
+    const endElement = useWindowScroll
+      ? (document.querySelector('.scroll-stack-end') as HTMLElement | null)
+      : (scrollerRef.current?.querySelector('.scroll-stack-end') as HTMLElement | null);
+    endOffsetRef.current = endElement ? measureOffsetFromDOM(endElement) : 0;
+  }, [measureOffsetFromDOM, useWindowScroll]);
+
   const updateCardTransforms = useCallback(() => {
     if (!cardsRef.current.length || isUpdatingRef.current) return;
 
@@ -118,16 +142,13 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     const stackPositionPx = parsePercentage(stackPosition, containerHeight);
     const scaleEndPositionPx = parsePercentage(scaleEndPosition, containerHeight);
 
-    const endElement = useWindowScroll
-      ? (document.querySelector('.scroll-stack-end') as HTMLElement | null)
-      : (scrollerRef.current?.querySelector('.scroll-stack-end') as HTMLElement | null);
-
-    const endElementTop = endElement ? getElementOffset(endElement) : 0;
+    // Pure arithmetic from here on — no DOM reads in the per-frame hot path.
+    const endElementTop = endOffsetRef.current;
 
     cardsRef.current.forEach((card, i) => {
       if (!card) return;
 
-      const cardTop = getElementOffset(card);
+      const cardTop = cardOffsetsRef.current[i] ?? 0;
       const triggerStart = cardTop - stackPositionPx - itemStackDistance * i;
       const triggerEnd = cardTop - scaleEndPositionPx;
       const pinStart = cardTop - stackPositionPx - itemStackDistance * i;
@@ -142,7 +163,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       if (blurAmount) {
         let topCardIndex = 0;
         for (let j = 0; j < cardsRef.current.length; j++) {
-          const jCardTop = getElementOffset(cardsRef.current[j]);
+          const jCardTop = cardOffsetsRef.current[j] ?? 0;
           const jTriggerStart = jCardTop - stackPositionPx - itemStackDistance * j;
           if (scrollTop >= jTriggerStart) {
             topCardIndex = j;
@@ -213,8 +234,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     onStackComplete,
     calculateProgress,
     parsePercentage,
-    getScrollData,
-    getElementOffset
+    getScrollData
   ]);
 
   const handleScroll = useCallback(() => {
@@ -235,11 +255,38 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
           updateCardTransforms();
         });
       };
+      // Filter mobile address-bar slides out of the resize handler. Real
+      // resizes / orientation changes alter the layout viewport by hundreds of
+      // pixels; address-bar slides change innerHeight by ~60–90px while
+      // clientHeight stays put. Threshold of 100px keeps us responsive to real
+      // resizes without recomputing on every URL-bar twitch.
+      const onResize = () => {
+        const newVh = document.documentElement.clientHeight;
+        if (Math.abs(newVh - viewportHeightRef.current) > 100) {
+          recomputeLayout();
+        }
+        scheduleUpdate();
+      };
+      const onOrientationOrLayout = () => {
+        recomputeLayout();
+        scheduleUpdate();
+      };
       window.addEventListener('scroll', scheduleUpdate, { passive: true });
-      window.addEventListener('resize', scheduleUpdate);
+      window.addEventListener('resize', onResize);
+      window.addEventListener('orientationchange', onOrientationOrLayout);
+      // Catches the "page opened already past the section" case: layout above
+      // (lazy routes, fonts, decoded images) may settle after our mount, and
+      // if the user doesn't scroll, no event would trigger a re-read.
+      window.addEventListener('load', onOrientationOrLayout);
+      const lateMount1 = window.setTimeout(onOrientationOrLayout, 120);
+      const lateMount2 = window.setTimeout(onOrientationOrLayout, 500);
       cleanupRef.current = () => {
         window.removeEventListener('scroll', scheduleUpdate);
-        window.removeEventListener('resize', scheduleUpdate);
+        window.removeEventListener('resize', onResize);
+        window.removeEventListener('orientationchange', onOrientationOrLayout);
+        window.removeEventListener('load', onOrientationOrLayout);
+        window.clearTimeout(lateMount1);
+        window.clearTimeout(lateMount2);
       };
       return;
     } else {
@@ -272,7 +319,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       lenisRef.current = lenis;
       return lenis;
     }
-  }, [handleScroll, useWindowScroll, updateCardTransforms]);
+  }, [handleScroll, useWindowScroll, updateCardTransforms, recomputeLayout]);
 
   useLayoutEffect(() => {
     if (!useWindowScroll && !scrollerRef.current) return;
@@ -289,15 +336,17 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       if (i < cards.length - 1) {
         card.style.marginBottom = `${itemDistance}px`;
       }
-      card.style.willChange = 'transform, filter';
+      // Only hint transform — filter promotion is unused here (blurAmount=0)
+      // and `perspective` on every card fattens compositor layers on mobile
+      // GPUs unnecessarily, which alone can cause sub-pixel jitter.
+      card.style.willChange = blurAmount ? 'transform, filter' : 'transform';
       card.style.transformOrigin = 'top center';
       card.style.backfaceVisibility = 'hidden';
       card.style.transform = 'translateZ(0)';
       (card.style as any).webkitTransform = 'translateZ(0)';
-      card.style.perspective = '1000px';
-      (card.style as any).webkitPerspective = '1000px';
     });
 
+    recomputeLayout();
     setupLenis();
 
     updateCardTransforms();
@@ -316,6 +365,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       }
       stackCompletedRef.current = false;
       cardsRef.current = [];
+      cardOffsetsRef.current = [];
       transformsCache.clear();
       isUpdatingRef.current = false;
     };
@@ -332,7 +382,8 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     useWindowScroll,
     onStackComplete,
     setupLenis,
-    updateCardTransforms
+    updateCardTransforms,
+    recomputeLayout
   ]);
 
   return (
