@@ -437,7 +437,6 @@ function HomePage() {
             '/gallery/scrollGrid/photo1.png',
             '/gallery/scrollGrid/photo2.png',
             '/gallery/scrollGrid/photo3.jpg',
-            '/gallery/scrollGrid/photo4.jpg',
             '/gallery/scrollGrid/photo5.jpg',
             '/gallery/scrollGrid/photo6.jpg',
           ].map((src, i) => (
