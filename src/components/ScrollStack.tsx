@@ -175,7 +175,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
   return (
     <div className={outerClass} ref={containerRef} style={outerStyle}>
-      <div className="scroll-stack-inner pt-[1vh] px-20 pb-[5rem]">
+      <div className="scroll-stack-inner pt-[1vh] px-20 pb-[3.75rem]">
         {wrappedChildren}
       </div>
     </div>
