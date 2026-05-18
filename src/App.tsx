@@ -443,7 +443,7 @@ function HomePage() {
           ].map((src, i) => (
             <ScrollStackItem
               key={i}
-              itemClassName="!p-0 !h-[clamp(240px,38vh,360px)] md:!h-[clamp(320px,55vh,560px)] overflow-hidden border border-blue-400/15 max-w-5xl mx-auto bg-[#040c1b]"
+              itemClassName="liquid-glass !p-0 !h-[clamp(240px,38vh,360px)] md:!h-[clamp(320px,55vh,560px)] overflow-hidden max-w-5xl mx-auto !bg-white/[0.03]"
             >
               <img
                 src={src}
