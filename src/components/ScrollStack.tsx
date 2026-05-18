@@ -133,13 +133,21 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   // its progressively-lower top position; the browser handles this on the
   // compositor thread, so pinned cards do NOT depend on per-frame JS to stay
   // in place — eliminating the JS-vs-compositor scroll-sync shiver on mobile.
+  //
+  // Convert a "%" stackPosition to "vh". For sticky `top`, `%` resolves
+  // against the containing block height (the tall scroll-stack-inner), not
+  // the viewport — so "20%" would place the stick point hundreds of pixels
+  // off-screen and cards never appear stuck.
+  const stickyTopExpr = stackPosition.endsWith('%')
+    ? `${parseFloat(stackPosition)}vh`
+    : stackPosition;
   const childArr = Children.toArray(children);
   const wrappedChildren = childArr.map((child, i) => (
     <div
       key={i}
       style={{
         position: 'sticky',
-        top: `calc(${stackPosition} + ${i * itemStackDistance}px)`,
+        top: `calc(${stickyTopExpr} + ${i * itemStackDistance}px)`,
         marginBottom: i < childArr.length - 1 ? `${itemDistance}px` : 0,
         // Later cards on top so newest in the stack covers older ones where
         // they overlap. Matches original stack visual.

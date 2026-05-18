@@ -77,7 +77,7 @@ function HomePage() {
   }, [location.state]);
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden font-sans text-white selection:bg-blue-500/30 bg-[#040c1b]">
+    <div className="relative min-h-screen w-full overflow-x-clip font-sans text-white selection:bg-blue-500/30 bg-[#040c1b]">
 
       {/* Global grid background */}
       <div className="grid-bg fixed inset-0 z-0 pointer-events-none" />
